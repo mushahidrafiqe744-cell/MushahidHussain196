@@ -34,6 +34,7 @@ import { ProjectModal } from '../components/ProjectModal';
 import { ResumeModal } from '../components/ResumeModal';
 import { ScrollIsland } from '../components/ScrollIsland';
 import { LiveChatWidget } from '../components/LiveChatWidget';
+import { StartupSplash } from '../components/StartupSplash';
 import { SCROLL_TOPICS } from '../data/scrollTopics';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -242,6 +243,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F5EE] text-[#11261B]" style={{ fontFamily: settings?.fontFamily || 'Inter, sans-serif' }}>
+      <StartupSplash name={profile?.name} title={profile?.title} />
       <Navbar
         profile={profile}
         activeSection={activeSection}
