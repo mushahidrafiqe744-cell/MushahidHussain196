@@ -3,6 +3,7 @@ import { ArrowRight, Download, Github, Linkedin, Mail, Sparkles, Code2, Layers, 
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
 import { HoverCounter } from './HoverCounter';
+import { PWAInstallButton } from './PWAInstallButton';
 import pin1Img from '../assets/images/pin1_new.jpg';
 import pin2Img from '../assets/images/pin2_new.jpg';
 import heroPortrait from '../assets/images/mushahid_hero_portrait_1790420656343.jpg';
@@ -110,6 +111,8 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 <Download className="w-4 h-4 text-[#C5A059] group-hover:translate-y-0.5 transition-transform duration-300" />
                 <span>Download CV</span>
               </button>
+
+              <PWAInstallButton variant="hero" />
             </div>
 
             {/* Interactive Metric Numbers Bar */}

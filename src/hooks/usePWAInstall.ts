@@ -13,31 +13,40 @@ declare global {
   }
 }
 
+export type DevicePlatform = 'pc' | 'android' | 'ios';
+
 export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
+  const [platform, setPlatform] = useState<DevicePlatform>('pc');
   const [isInIframe, setIsInIframe] = useState(false);
 
   useEffect(() => {
-    // Check if running inside an installed standalone PC/Mobile PWA window
     const standalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as unknown as { standalone?: boolean }).standalone === true;
     setIsInstalled(standalone);
 
-    // Check if running inside a preview iframe
     try {
       setIsInIframe(window.self !== window.top);
     } catch {
       setIsInIframe(true);
     }
 
-    // Detect iOS devices
     const ua = window.navigator.userAgent.toLowerCase();
-    setIsIOS(/iphone|ipad|ipod/.test(ua));
+    const isIOSDevice =
+      /iphone|ipad|ipod/.test(ua) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroidDevice = /android/.test(ua);
 
-    // Register Service Worker so Chromium enables native Desktop/Mobile PWA installation
+    if (isIOSDevice) {
+      setPlatform('ios');
+    } else if (isAndroidDevice) {
+      setPlatform('android');
+    } else {
+      setPlatform('pc');
+    }
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((err) => {
         console.warn('[PWA] Service worker registration skipped:', err);
@@ -47,6 +56,12 @@ export function usePWAInstall() {
     if (window.__deferredPwaPrompt) {
       setDeferredPrompt(window.__deferredPwaPrompt);
     }
+
+    const syncFromWindow = () => {
+      if (window.__deferredPwaPrompt) {
+        setDeferredPrompt(window.__deferredPwaPrompt);
+      }
+    };
 
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
@@ -62,10 +77,12 @@ export function usePWAInstall() {
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('pwa-prompt-ready', syncFromWindow);
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('pwa-prompt-ready', syncFromWindow);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
@@ -88,7 +105,9 @@ export function usePWAInstall() {
   return {
     isInstallable: !!deferredPrompt,
     isInstalled,
-    isIOS,
+    isIOS: platform === 'ios',
+    isAndroid: platform === 'android',
+    platform,
     isInIframe,
     install,
   };
