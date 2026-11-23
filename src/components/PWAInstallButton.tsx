@@ -10,7 +10,6 @@ import {
   ExternalLink,
   FileDown,
   Copy,
-  Share2,
   Share,
 } from 'lucide-react';
 import { DevicePlatform, usePWAInstall } from '../hooks/usePWAInstall';
@@ -134,6 +133,17 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
     setTimeout(() => setShowSuccessToast(false), 5000);
   };
 
+  const getShareUrl = () => {
+    if (typeof window === 'undefined') return '';
+    return `${window.location.origin}/?install=1`;
+  };
+
+  const getWhatsAppShareHref = () => {
+    const targetUrl = getShareUrl();
+    const message = `Open in Chrome (Android) or Safari (iPhone) to install Mushahid Dev App: ${targetUrl}`;
+    return `https://wa.me/?text=${encodeURIComponent(message)}`;
+  };
+
   if (isInstalled) {
     return null;
   }
@@ -236,10 +246,10 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
                     setTimeout(() => setShowSuccessToast(false), 6000);
                   }
                 }}
-                className="w-full py-3 px-4 rounded-2xl bg-[#11261B] hover:bg-[#1A3828] text-[#DFC285] border-2 border-[#C5A059] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg cursor-pointer transition-all hover:scale-[1.01]"
+                className="w-full py-3.5 px-4 rounded-2xl bg-[#11261B] hover:bg-[#1A3828] text-[#DFC285] border-2 border-[#C5A059] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg cursor-pointer transition-all hover:scale-[1.01]"
               >
                 <Download className="w-4 h-4 text-[#C5A059]" />
-                <span>Click Here to Install App Now</span>
+                <span>Install Mushahid Dev App Now</span>
               </button>
             )}
 
@@ -247,7 +257,7 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
             {isInIframe && !isInstallable && (
               <div className="bg-amber-50 border border-amber-300 rounded-2xl p-3.5 space-y-2.5">
                 <p className="text-xs text-amber-950 font-medium leading-relaxed">
-                  Preview frame ke andar browser install popup block karta hai. 1-click install ke liye site ko direct window me kholein:
+                  Preview frame ke andar phone/PC install popup block hota hai. Asli app install karne ke liye direct browser window me kholein:
                 </p>
                 <a
                   href="/?install=1"
@@ -256,7 +266,7 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
                   className="w-full py-2.5 px-4 rounded-xl bg-[#11261B] hover:bg-[#1A3828] text-[#DFC285] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-sm"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Open Full Window & Install App</span>
+                  <span>Open Full Browser &amp; Install</span>
                 </a>
               </div>
             )}
@@ -307,7 +317,7 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
                     Ya browser menu <strong>⋮ → Cast, save, and share → Install page as app</strong> dabain (Mac Safari: <strong>File → Add to Dock</strong>).
                   </li>
                   <li>
-                    <strong>Install</strong> karte hi app khulegi aur PC Desktop & Taskbar par Golden Logo show ho jayega.
+                    <strong>Install</strong> karte hi app khulegi aur PC Desktop &amp; Taskbar par Golden Logo show ho jayega.
                   </li>
                 </ol>
               </div>
@@ -315,13 +325,13 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
 
             {activeTab === 'android' && (
               <div className="bg-white rounded-2xl p-4 border border-[#11261B]/10 text-xs text-[#11261B]/85 space-y-2">
-                <p className="font-bold text-[#11261B]">Android Mobile (Chrome / Samsung Browser):</p>
+                <p className="font-bold text-[#11261B]">Android Mobile (Google Chrome):</p>
                 <ol className="list-decimal pl-4 space-y-1.5 font-medium">
                   <li>
-                    Chrome top-right me <strong>⋮ (3 dots)</strong> par tap karein.
+                    Link ko <strong>Google Chrome</strong> me kholein (WhatsApp/in-app browser me nahi).
                   </li>
                   <li>
-                    <strong>Install app</strong> ya <strong>Add to Home screen → Install</strong> dabain.
+                    Upar right side <strong>⋮ (3 dots)</strong> par tap karein → <strong>Install app</strong> ya <strong>Add to Home screen → Install</strong> dabain.
                   </li>
                   <li>
                     App real mobile app ki tarah install ho kar Home Screen aur App Drawer me Golden Logo ke saath show hogi.
@@ -335,35 +345,44 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
                 <p className="font-bold text-[#11261B]">iPhone / iPad (Safari Browser):</p>
                 <ol className="list-decimal pl-4 space-y-1.5 font-medium">
                   <li>
-                    Site ko <strong>Safari</strong> me open karein aur niche <strong>Share</strong> icon (square with arrow) par tap karein.
+                    Website ko <strong>Safari browser</strong> me open karein (Chrome/WhatsApp me Add to Home Screen nahi aata).
                   </li>
                   <li>
-                    Scroll karke <strong>Add to Home Screen</strong> select karein.
+                    Niche <strong>Share</strong> button (square with up arrow) dabain aur <strong>Add to Home Screen</strong> select karein.
                   </li>
                   <li>
-                    <strong>Add</strong> dabate hi iPhone display par Golden Logo app icon show ho jayega.
+                    Upar <strong>Add</strong> dabate hi iPhone display par full-screen app aur Golden Logo add ho jayega.
                   </li>
                 </ol>
               </div>
             )}
 
-            {/* Footer Utilities */}
-            <div className="flex flex-wrap gap-2 pt-1">
+            {/* Footer Utilities: Send to Phone + Copy Link + Offline Shortcut */}
+            <div className="grid grid-cols-3 gap-2 pt-1">
+              <a
+                href={getWhatsAppShareHref()}
+                target="_blank"
+                rel="noreferrer"
+                className="py-2.5 px-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-950 font-bold text-[11px] flex items-center justify-center gap-1 cursor-pointer transition-all text-center"
+              >
+                <Smartphone className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                <span>Send to Phone</span>
+              </a>
               <button
                 type="button"
                 onClick={handleShareToPhone}
-                className="flex-1 py-2.5 px-3 rounded-xl bg-white hover:bg-[#F2EDE2] border border-[#11261B]/20 text-[#11261B] font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                className="py-2.5 px-2 rounded-xl bg-white hover:bg-[#F2EDE2] border border-[#11261B]/20 text-[#11261B] font-bold text-[11px] flex items-center justify-center gap-1 cursor-pointer transition-all"
               >
-                {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5 text-[#C5A059]" />}
-                <span>{copiedUrl ? 'Link Copied!' : 'Send / Copy Link'}</span>
+                {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> : <Copy className="w-3.5 h-3.5 text-[#C5A059] shrink-0" />}
+                <span>{copiedUrl ? 'Copied!' : 'Copy Link'}</span>
               </button>
               <button
                 type="button"
                 onClick={handleDownloadOfflinePackage}
-                className="flex-1 py-2.5 px-3 rounded-xl bg-white hover:bg-[#F2EDE2] border border-[#11261B]/20 text-[#11261B] font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                className="py-2.5 px-2 rounded-xl bg-white hover:bg-[#F2EDE2] border border-[#11261B]/20 text-[#11261B] font-bold text-[11px] flex items-center justify-center gap-1 cursor-pointer transition-all"
               >
-                <FileDown className="w-3.5 h-3.5 text-[#C5A059]" />
-                <span>Offline Shortcut</span>
+                <FileDown className="w-3.5 h-3.5 text-[#C5A059] shrink-0" />
+                <span>Offline File</span>
               </button>
             </div>
           </div>
@@ -394,16 +413,17 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
 };
 
 export const MobileAppInstallBanner: React.FC = () => {
-  const { isInstallable, isInstalled, isIOS, isAndroid, isInIframe, install } = usePWAInstall();
+  const { isInstallable, isInstalled, isIOS, isInIframe, install } = usePWAInstall();
   const [dismissed, setDismissed] = useState(false);
   const [showMobileGuide, setShowMobileGuide] = useState(false);
+  const [mobileTab, setMobileTab] = useState<'android' | 'ios'>(isIOS ? 'ios' : 'android');
+  const [copied, setCopied] = useState(false);
 
-  if (isInstalled || dismissed || isInIframe) {
-    return null;
-  }
+  useEffect(() => {
+    setMobileTab(isIOS ? 'ios' : 'android');
+  }, [isIOS]);
 
-  // Show sleek native app-store-style install strip on Android & iPhone (mobile screens)
-  if (!isIOS && !isAndroid) {
+  if (isInstalled || dismissed) {
     return null;
   }
 
@@ -413,6 +433,13 @@ export const MobileAppInstallBanner: React.FC = () => {
       if (accepted) return;
     }
     setShowMobileGuide(true);
+  };
+
+  const handleCopyMobileUrl = () => {
+    if (typeof window === 'undefined') return;
+    navigator.clipboard?.writeText(`${window.location.origin}/?install=1`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -428,18 +455,30 @@ export const MobileAppInstallBanner: React.FC = () => {
           <div className="min-w-0">
             <div className="text-xs font-bold text-[#F3DFAD] truncate">Mushahid Dev App</div>
             <div className="text-[10px] text-[#A3B8A8] truncate">
-              {isIOS ? 'Add to iPhone Home Screen' : 'Install App on Mobile Display'}
+              {isIOS ? 'Add to iPhone Home Screen' : 'Phone Screen par App Install karein'}
             </div>
           </div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            type="button"
-            onClick={handleAction}
-            className="px-3 py-1.5 rounded-lg bg-[#C5A059] text-[#0B1F14] text-[11px] font-black uppercase tracking-wider cursor-pointer shadow-xs"
-          >
-            Install
-          </button>
+          {isInIframe ? (
+            <a
+              href="/?install=1"
+              target="_blank"
+              rel="noreferrer"
+              className="px-3 py-1.5 rounded-lg bg-[#C5A059] text-[#0B1F14] text-[11px] font-black uppercase tracking-wider shadow-xs inline-flex items-center gap-1"
+            >
+              <span>Install</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          ) : (
+            <button
+              type="button"
+              onClick={handleAction}
+              className="px-3 py-1.5 rounded-lg bg-[#C5A059] text-[#0B1F14] text-[11px] font-black uppercase tracking-wider cursor-pointer shadow-xs"
+            >
+              Install
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setDismissed(true)}
@@ -470,7 +509,7 @@ export const MobileAppInstallBanner: React.FC = () => {
                 />
                 <div>
                   <h4 className="font-display font-bold text-base">Install on Mobile</h4>
-                  <p className="text-[11px] text-[#5C6E61]">Logo mobile screen par add karein</p>
+                  <p className="text-[11px] text-[#5C6E61]">Phone display par Golden Logo add karein</p>
                 </div>
               </div>
               <button type="button" onClick={() => setShowMobileGuide(false)} className="p-1 cursor-pointer">
@@ -478,27 +517,72 @@ export const MobileAppInstallBanner: React.FC = () => {
               </button>
             </div>
 
-            {isIOS ? (
+            {isInstallable && (
+              <button
+                type="button"
+                onClick={async () => {
+                  const ok = await install();
+                  if (ok) setShowMobileGuide(false);
+                }}
+                className="w-full py-3 rounded-xl bg-[#11261B] text-[#DFC285] border border-[#C5A059] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Download className="w-4 h-4 text-[#C5A059]" />
+                <span>Tap Here to Install App Now</span>
+              </button>
+            )}
+
+            <div className="grid grid-cols-2 gap-1.5 bg-[#EFE9DC] p-1 rounded-xl border border-[#11261B]/10">
+              <button
+                type="button"
+                onClick={() => setMobileTab('android')}
+                className={`py-1.5 rounded-lg text-xs font-bold cursor-pointer ${
+                  mobileTab === 'android' ? 'bg-[#11261B] text-[#DFC285]' : 'text-[#5C6E61]'
+                }`}
+              >
+                Android Chrome
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileTab('ios')}
+                className={`py-1.5 rounded-lg text-xs font-bold cursor-pointer ${
+                  mobileTab === 'ios' ? 'bg-[#11261B] text-[#DFC285]' : 'text-[#5C6E61]'
+                }`}
+              >
+                iPhone Safari
+              </button>
+            </div>
+
+            {mobileTab === 'ios' ? (
               <ol className="list-decimal pl-5 space-y-1.5 text-xs font-medium bg-white p-3.5 rounded-2xl border border-[#11261B]/10">
-                <li>Safari me niche <strong>Share ↑</strong> icon dabain.</li>
-                <li>Scroll karke <strong>Add to Home Screen</strong> dabain.</li>
-                <li>Top par <strong>Add</strong> dabain — iPhone display par logo aa jayega.</li>
+                <li>Website ko <strong>Safari browser</strong> me open karein.</li>
+                <li>Niche <strong>Share</strong> icon dabain aur <strong>Add to Home Screen</strong> select karein.</li>
+                <li>Top par <strong>Add</strong> dabain — iPhone display par full-screen app &amp; logo aa jayega.</li>
               </ol>
             ) : (
               <ol className="list-decimal pl-5 space-y-1.5 text-xs font-medium bg-white p-3.5 rounded-2xl border border-[#11261B]/10">
-                <li>Chrome me upar <strong>⋮ (Menu)</strong> dabain.</li>
-                <li><strong>Install app</strong> ya <strong>Add to Home screen</strong> dabain.</li>
-                <li>Android Home Screen par Golden Logo ke saath app install ho jayegi.</li>
+                <li>Site ko <strong>Google Chrome</strong> me kholein (WhatsApp webview me nahi).</li>
+                <li>Chrome me upar <strong>⋮ (3 dots)</strong> dabain → <strong>Install app</strong> ya <strong>Add to Home screen</strong> select karein.</li>
+                <li>Android Home Screen par Golden Logo ke saath real mobile app install ho jayegi.</li>
               </ol>
             )}
 
-            <button
-              type="button"
-              onClick={() => setShowMobileGuide(false)}
-              className="w-full py-2.5 rounded-xl bg-[#11261B] text-[#DFC285] font-bold text-xs cursor-pointer"
-            >
-              Got It
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleCopyMobileUrl}
+                className="flex-1 py-2.5 rounded-xl bg-white border border-[#11261B]/20 text-[#11261B] font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-[#C5A059]" />}
+                <span>{copied ? 'Link Copied!' : 'Copy Chrome/Safari Link'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowMobileGuide(false)}
+                className="px-5 py-2.5 rounded-xl bg-[#11261B] text-[#DFC285] font-bold text-xs cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

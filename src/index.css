@@ -4,15 +4,31 @@
   html {
     scroll-behavior: smooth;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    overscroll-behavior-y: contain;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     background-color: #F8F5EE;
     color: #11261B;
-    antialiased: true;
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    overscroll-behavior-y: contain;
+  }
+
+  @media all and (display-mode: standalone) {
+    body {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+
+    button, a, nav {
+      -webkit-user-select: none;
+      user-select: none;
+    }
   }
 }
 

@@ -22,10 +22,17 @@ export function usePWAInstall() {
   const [isInIframe, setIsInIframe] = useState(false);
 
   useEffect(() => {
-    const standalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    const checkStandalone = () =>
+      mediaQuery.matches ||
       (window.navigator as unknown as { standalone?: boolean }).standalone === true;
-    setIsInstalled(standalone);
+
+    setIsInstalled(checkStandalone());
+
+    const handleDisplayModeChange = () => {
+      setIsInstalled(checkStandalone());
+    };
+    mediaQuery.addEventListener?.('change', handleDisplayModeChange);
 
     try {
       setIsInIframe(window.self !== window.top);
@@ -37,7 +44,9 @@ export function usePWAInstall() {
     const isIOSDevice =
       /iphone|ipad|ipod/.test(ua) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    const isAndroidDevice = /android/.test(ua);
+    const isAndroidDevice =
+      /android/.test(ua) ||
+      (!isIOSDevice && navigator.maxTouchPoints > 1 && window.innerWidth < 1024);
 
     if (isIOSDevice) {
       setPlatform('ios');
@@ -81,6 +90,7 @@ export function usePWAInstall() {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
+      mediaQuery.removeEventListener?.('change', handleDisplayModeChange);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('pwa-prompt-ready', syncFromWindow);
       window.removeEventListener('appinstalled', handleAppInstalled);

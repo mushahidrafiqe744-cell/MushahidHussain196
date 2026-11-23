@@ -1,7 +1,8 @@
-const CACHE_NAME = 'mushahid-portfolio-pwa-v3';
+const CACHE_NAME = 'mushahid-portfolio-pwa-v4';
 const PRECACHE_ASSETS = [
   '/',
   '/manifest.webmanifest',
+  '/pwa-144x144.png',
   '/pwa-192x192.png',
   '/pwa-512x512.png',
   '/pwa-maskable-512x512.png',
@@ -48,6 +49,7 @@ self.addEventListener('fetch', (event) => {
   if (
     url.pathname === '/manifest.webmanifest' ||
     url.pathname.startsWith('/pwa-') ||
+    url.pathname.startsWith('/screenshot-') ||
     url.pathname === '/apple-touch-icon.png' ||
     url.pathname === '/favicon.png' ||
     url.pathname.startsWith('/assets/')
@@ -78,7 +80,7 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match('/'))
+        .catch(() => caches.match('/').then((cached) => cached || Response.error()))
     );
   }
 });
