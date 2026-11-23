@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { resolveLiveProjectUrl } from '../lib/projectImage';
 import {
   initialProfile,
   initialProjects,
@@ -206,13 +207,26 @@ const mapDbToFrontend = (item: any) => {
     rawImg = ORIGINAL_PROJECT_IMAGES[item.id];
   }
 
+  const rawLiveUrl = item.live_url || item.liveUrl || item.link || '#';
+  const normalizedTitle =
+    item.title === 'Dr. Aqsa Ramzan Healthcare Portal'
+      ? 'Aqsa Ramzan — Graphic Designer Portfolio'
+      : item.title;
+  const resolvedLiveUrl =
+    resolveLiveProjectUrl({
+      id: item.id || '',
+      title: normalizedTitle || '',
+      liveUrl: rawLiveUrl,
+    }) || rawLiveUrl;
+
   return {
     ...item,
+    title: normalizedTitle,
     createdAt: item.created_at || item.createdAt || new Date().toISOString(),
     updatedAt: item.updated_at || item.updatedAt || new Date().toISOString(),
     imageUrl: rawImg,
     image: rawImg,
-    liveUrl: item.live_url || item.liveUrl || item.link || '#',
+    liveUrl: resolvedLiveUrl,
     githubUrl: item.github_url || item.githubUrl || '#',
     categoryLabel: item.category_label || item.categoryLabel || 'Web Application',
     displayOrder: item.display_order ?? item.displayOrder ?? 0,
@@ -384,6 +398,15 @@ export const cmsService = {
 
           if (mapped.length > 0) {
             console.log(`[CMS SUPABASE FETCH SUCCESS] ${normTable} loaded (${mapped.length} items)`);
+            if (normTable === 'projects') {
+              const existingDomains = new Set(mapped.map((m: any) => m.liveUrl));
+              const missingBuiltIns = initialProjects
+                .filter((p) => p.liveUrl && !existingDomains.has(p.liveUrl) && !mapped.some((m: any) => m.title === p.title))
+                .map(mapDbToFrontend);
+              const merged = [...mapped, ...missingBuiltIns];
+              setCacheData(normTable, merged);
+              return merged;
+            }
             setCacheData(normTable, mapped);
             return mapped;
           }
@@ -405,14 +428,30 @@ export const cmsService = {
               if (seedErr) console.warn(`[CMS AUTO-SEED WARN] ${normTable}:`, seedErr.message);
             });
           }
-          return fallback.map(mapDbToFrontend);
+          const mappedFallback = fallback.map(mapDbToFrontend);
+          if (normTable === 'projects') {
+            const existingUrls = new Set(mappedFallback.map((m: any) => m.liveUrl));
+            const missingBuiltIns = initialProjects
+              .filter((p) => p.liveUrl && !existingUrls.has(p.liveUrl) && !mappedFallback.some((m: any) => m.title === p.title))
+              .map(mapDbToFrontend);
+            return [...mappedFallback, ...missingBuiltIns];
+          }
+          return mappedFallback;
         }
       } catch (err) {
         console.warn(`[CMS SUPABASE FETCH EXCEPTION] ${normTable}:`, err);
       }
     }
 
-    return getFallbackData(normTable).map(mapDbToFrontend);
+    const fallbackList = getFallbackData(normTable).map(mapDbToFrontend);
+    if (normTable === 'projects') {
+      const existingUrls = new Set(fallbackList.map((m: any) => m.liveUrl));
+      const missingBuiltIns = initialProjects
+        .filter((p) => p.liveUrl && !existingUrls.has(p.liveUrl) && !fallbackList.some((m: any) => m.title === p.title))
+        .map(mapDbToFrontend);
+      return [...fallbackList, ...missingBuiltIns];
+    }
+    return fallbackList;
   },
 
   // Insert data with instant local cache persistence and graceful Supabase sync

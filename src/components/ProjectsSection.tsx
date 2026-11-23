@@ -1,69 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Github, ExternalLink, ArrowUpRight, Search, Code, Filter, Sparkles, Layers, MessageCircle, ChevronLeft, ChevronRight, LayoutGrid, Sliders, FolderGit2, Cpu, ShoppingCart, Terminal } from 'lucide-react';
+import { Github, ArrowUpRight, Search, Code, Sparkles, Layers, MessageCircle, ChevronLeft, ChevronRight, LayoutGrid, Sliders, FolderGit2, Cpu, ShoppingCart, Terminal, Play } from 'lucide-react';
 import { Project } from '../types/portfolio';
+import { resolveProjectImage, resolveProjectDomain } from '../lib/projectImage';
+import { LiveProjectDemo } from './LiveProjectDemo';
 
 interface ProjectsSectionProps {
   projects: Project[];
   onSelectProject: (project: Project) => void;
+  onOpenLiveDemo?: (project: Project) => void;
 }
-
-const resolveProjectImage = (project: Project): string => {
-  const rawUrl =
-    typeof project.imageUrl === 'object' && (project.imageUrl as any)?.src
-      ? (project.imageUrl as any).src
-      : typeof project.image === 'object' && (project.image as any)?.src
-      ? (project.image as any).src
-      : typeof project.imageUrl === 'string' && project.imageUrl
-      ? project.imageUrl
-      : typeof project.image === 'string' && project.image
-      ? project.image
-      : '';
-
-  const titleLower = (project.title || '').toLowerCase();
-  if (titleLower.includes('quran')) return '/assets/images/al_quran_full_web_1790428789923.jpg';
-  if (titleLower.includes('gourmet') || titleLower.includes('restaurant')) return '/assets/images/restaurant_web_1791805986623.jpg';
-  if (titleLower.includes('mba') || titleLower.includes('academy')) return '/assets/images/mba_academy_full_web_1790428843333.jpg';
-  if (titleLower.includes('textile') || titleLower.includes('noor')) return '/assets/images/al_noor_textile_full_web_1790428824308.jpg';
-  if (titleLower.includes('rehab') || titleLower.includes('raheem')) return '/assets/images/raheem_rehab_full_web_1790428879741.jpg';
-  if (titleLower.includes('pavilion')) return '/assets/images/grand_pavilion_full_web_1790428751763.jpg';
-  if (titleLower.includes('quaid') || titleLower.includes('25th')) return '/assets/images/quaid_tribute_full_web_1790428772996.jpg';
-  if (titleLower.includes('aqsa')) return '/assets/images/aqsa_ramzan_full_web_1790428861081.jpg';
-  if (titleLower.includes('novara')) return '/assets/images/novara_store_full_web_1790428808211.jpg';
-  if (titleLower.includes('meer') || titleLower.includes('decor')) return '/assets/images/meer_royal_decor_full_web_1791025431587.jpg';
-  if (titleLower.includes('estate') || titleLower.includes('horizon')) return '/assets/images/real_estate_web_1791805973161.jpg';
-  if (titleLower.includes('finedge') || titleLower.includes('wealth')) return '/assets/images/fintech_web_1791806009333.jpg';
-  if (titleLower.includes('cloudpulse') || titleLower.includes('microservice')) return '/assets/images/cloud_api_web_1791806022294.jpg';
-  if (titleLower.includes('biztop')) return '/assets/images/biztop_full_web_1790852703068.jpg';
-
-  const PROJECT_ID_MAP: Record<string, string> = {
-    'proj-1': '/assets/images/biztop_full_web_1790852703068.jpg',
-    'proj-2': '/assets/images/meer_royal_decor_full_web_1791025431587.jpg',
-    'proj-3': '/assets/images/aqsa_ramzan_full_web_1790428861081.jpg',
-    'proj-4': '/assets/images/novara_store_full_web_1790428808211.jpg',
-    'proj-5': '/assets/images/grand_pavilion_full_web_1790428751763.jpg',
-    'proj-6': '/assets/images/quaid_tribute_full_web_1790428772996.jpg',
-    'proj-7': '/assets/images/al_quran_full_web_1790428789923.jpg',
-    'proj-8': '/assets/images/mba_academy_full_web_1790428843333.jpg',
-    'proj-9': '/assets/images/raheem_rehab_full_web_1790428879741.jpg',
-    'proj-10': '/assets/images/al_noor_textile_full_web_1790428824308.jpg',
-    'proj-11': '/assets/images/real_estate_web_1791805973161.jpg',
-    'proj-12': '/assets/images/restaurant_web_1791805986623.jpg',
-    'proj-13': '/assets/images/fintech_web_1791806009333.jpg',
-    'proj-14': '/assets/images/cloud_api_web_1791806022294.jpg',
-  };
-
-  if (PROJECT_ID_MAP[project.id]) {
-    return PROJECT_ID_MAP[project.id];
-  }
-
-  return rawUrl || '/assets/images/biztop_full_web_1790852703068.jpg';
-};
 
 const ProjectCard: React.FC<{
   project: Project;
   index: number;
   onSelectProject: (project: Project) => void;
-}> = ({ project, index, onSelectProject }) => {
+  onOpenLiveDemo: (project: Project) => void;
+}> = ({ project, index, onSelectProject, onOpenLiveDemo }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [currentNum, setCurrentNum] = useState(0);
   const targetNum = index + 1;
@@ -95,20 +47,7 @@ const ProjectCard: React.FC<{
   }, [isHovered, targetNum]);
 
   const formattedNum = String(currentNum).padStart(2, '0');
-
-  const cleanDomain = (() => {
-    const url = project.liveUrl || (project as any).link || '';
-    if (url) {
-      try {
-        const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
-        return parsed.hostname.replace(/^www\./, '');
-      } catch (_) {
-        return url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
-      }
-    }
-    return `${project.title.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
-  })();
-
+  const cleanDomain = resolveProjectDomain(project);
   const imageSrc = resolveProjectImage(project);
 
   return (
@@ -235,7 +174,7 @@ const ProjectCard: React.FC<{
       {/* Card Action Buttons */}
       <div className="px-6 py-4 bg-white/70 border-t border-[#11261B]/10 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          {project.githubUrl && (
+          {project.githubUrl && project.githubUrl !== '#' && (
             <a
               href={project.githubUrl}
               target="_blank"
@@ -248,18 +187,16 @@ const ProjectCard: React.FC<{
             </a>
           )}
 
-          {project.liveUrl && (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noreferrer"
-              title="Open Live Preview"
-              className="p-2 rounded-lg bg-white border border-[#11261B]/15 text-[#11261B] hover:border-[#C5A059] hover:bg-[#F2EDE2] transition-all shadow-xs flex items-center gap-1.5 text-xs font-semibold hover:scale-105"
-            >
-              <ExternalLink className="w-3.5 h-3.5 text-[#C5A059]" />
-              <span className="hidden sm:inline">Live Demo</span>
-            </a>
-          )}
+          <button
+            type="button"
+            onClick={() => onOpenLiveDemo(project)}
+            title="Launch Interactive Live Demo"
+            className="p-2 rounded-lg bg-white border border-[#11261B]/15 text-[#11261B] hover:border-[#C5A059] hover:bg-[#F2EDE2] transition-all shadow-xs flex items-center gap-1.5 text-xs font-semibold hover:scale-105 cursor-pointer"
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <Play className="w-3 h-3 text-[#C5A059] fill-[#C5A059]" />
+            <span className="hidden sm:inline">Live Demo</span>
+          </button>
 
           <a
             href={`https://wa.me/923290725117?text=${encodeURIComponent(
@@ -288,12 +225,21 @@ const ProjectCard: React.FC<{
   );
 };
 
-export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSelectProject }) => {
+export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSelectProject, onOpenLiveDemo }) => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [viewMode, setViewMode] = useState<'grid' | 'slider'>('grid');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
+  const [localLiveProject, setLocalLiveProject] = useState<Project | null>(null);
+
+  const handleLaunchLiveDemo = (project: Project) => {
+    if (onOpenLiveDemo) {
+      onOpenLiveDemo(project);
+    } else {
+      setLocalLiveProject(project);
+    }
+  };
 
   const categories: { id: string; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
     { id: 'all', label: 'All Projects', icon: FolderGit2 },
@@ -492,6 +438,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
                         project={project}
                         index={index}
                         onSelectProject={onSelectProject}
+                        onOpenLiveDemo={handleLaunchLiveDemo}
                       />
                     </div>
                   </div>
@@ -552,11 +499,19 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
                 project={project}
                 index={index}
                 onSelectProject={onSelectProject}
+                onOpenLiveDemo={handleLaunchLiveDemo}
               />
             ))}
           </div>
         )}
       </div>
+
+      {!onOpenLiveDemo && localLiveProject && (
+        <LiveProjectDemo
+          project={localLiveProject}
+          onClose={() => setLocalLiveProject(null)}
+        />
+      )}
     </section>
   );
 };

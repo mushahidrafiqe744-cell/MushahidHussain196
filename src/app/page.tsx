@@ -31,6 +31,7 @@ import { ContactSection } from '../components/ContactSection';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { Footer } from '../components/Footer';
 import { ProjectModal } from '../components/ProjectModal';
+import { LiveProjectDemo } from '../components/LiveProjectDemo';
 import { ResumeModal } from '../components/ResumeModal';
 import { ScrollIsland } from '../components/ScrollIsland';
 import { LiveChatWidget } from '../components/LiveChatWidget';
@@ -81,6 +82,7 @@ export default function HomePage() {
   const [settings, setSettings] = useState<any>(null);
   const [activeSection, setActiveSection] = useState<SectionId>('hero');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [liveDemoProject, setLiveDemoProject] = useState<Project | null>(null);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
@@ -229,7 +231,7 @@ export default function HomePage() {
       case 'why-choose-me':
         return <WhyChooseMeSection pillars={whyUs.pillars} workflow={whyUs.workflow} />;
       case 'projects':
-        return <ProjectsSection projects={projects.filter((p: any) => !p.hidden)} onSelectProject={setSelectedProject} />;
+        return <ProjectsSection projects={projects.filter((p: any) => !p.hidden)} onSelectProject={setSelectedProject} onOpenLiveDemo={setLiveDemoProject} />;
       case 'testimonials':
         return <TestimonialsSection testimonials={testimonials} onOpenContact={() => handleSelectSection('contact')} onOpenFeedback={() => setIsFeedbackModalOpen(true)} />;
       case 'resume':
@@ -308,7 +310,10 @@ export default function HomePage() {
         </div>
       </main>
       <Footer profile={profile} onSelectSection={handleSelectSection} />
-      <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+      <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} onOpenLiveDemo={setLiveDemoProject} />
+      {liveDemoProject && (
+        <LiveProjectDemo project={liveDemoProject} onClose={() => setLiveDemoProject(null)} />
+      )}
       <ResumeModal isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} profile={profile} projects={projects} skillGroups={skills} experiences={experiences} courses={courses} />
       <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />
       <ScrollIsland topics={SCROLL_TOPICS} />

@@ -1,66 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { X, Github, ExternalLink, Check, Layers, Zap, Calendar, Sparkles, MessageCircle } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { X, Github, ExternalLink, Check, Layers, Zap, Sparkles, MessageCircle, Play } from 'lucide-react';
 import { Project } from '../types/portfolio';
+import { resolveProjectImage, resolveProjectDomain } from '../lib/projectImage';
 
 interface ProjectModalProps {
   project: Project | null;
   onClose: () => void;
+  onOpenLiveDemo?: (project: Project) => void;
 }
 
-const resolveProjectImage = (project: Project): string => {
-  const rawUrl =
-    typeof project.imageUrl === 'object' && (project.imageUrl as any)?.src
-      ? (project.imageUrl as any).src
-      : typeof project.image === 'object' && (project.image as any)?.src
-      ? (project.image as any).src
-      : typeof project.imageUrl === 'string' && project.imageUrl
-      ? project.imageUrl
-      : typeof project.image === 'string' && project.image
-      ? project.image
-      : '';
-
-  const titleLower = (project.title || '').toLowerCase();
-  if (titleLower.includes('quran')) return '/assets/images/al_quran_full_web_1790428789923.jpg';
-  if (titleLower.includes('gourmet') || titleLower.includes('restaurant')) return '/assets/images/restaurant_web_1791805986623.jpg';
-  if (titleLower.includes('mba') || titleLower.includes('academy')) return '/assets/images/mba_academy_full_web_1790428843333.jpg';
-  if (titleLower.includes('textile') || titleLower.includes('noor')) return '/assets/images/al_noor_textile_full_web_1790428824308.jpg';
-  if (titleLower.includes('rehab') || titleLower.includes('raheem')) return '/assets/images/raheem_rehab_full_web_1790428879741.jpg';
-  if (titleLower.includes('pavilion')) return '/assets/images/grand_pavilion_full_web_1790428751763.jpg';
-  if (titleLower.includes('quaid') || titleLower.includes('25th')) return '/assets/images/quaid_tribute_full_web_1790428772996.jpg';
-  if (titleLower.includes('aqsa')) return '/assets/images/aqsa_ramzan_full_web_1790428861081.jpg';
-  if (titleLower.includes('novara')) return '/assets/images/novara_store_full_web_1790428808211.jpg';
-  if (titleLower.includes('meer') || titleLower.includes('decor')) return '/assets/images/meer_royal_decor_full_web_1791025431587.jpg';
-  if (titleLower.includes('estate') || titleLower.includes('horizon')) return '/assets/images/real_estate_web_1791805973161.jpg';
-  if (titleLower.includes('finedge') || titleLower.includes('wealth')) return '/assets/images/fintech_web_1791806009333.jpg';
-  if (titleLower.includes('cloudpulse') || titleLower.includes('microservice')) return '/assets/images/cloud_api_web_1791806022294.jpg';
-  if (titleLower.includes('biztop')) return '/assets/images/biztop_full_web_1790852703068.jpg';
-
-  const PROJECT_ID_MAP: Record<string, string> = {
-    'proj-1': '/assets/images/biztop_full_web_1790852703068.jpg',
-    'proj-2': '/assets/images/meer_royal_decor_full_web_1791025431587.jpg',
-    'proj-3': '/assets/images/aqsa_ramzan_full_web_1790428861081.jpg',
-    'proj-4': '/assets/images/novara_store_full_web_1790428808211.jpg',
-    'proj-5': '/assets/images/grand_pavilion_full_web_1790428751763.jpg',
-    'proj-6': '/assets/images/quaid_tribute_full_web_1790428772996.jpg',
-    'proj-7': '/assets/images/al_quran_full_web_1790428789923.jpg',
-    'proj-8': '/assets/images/mba_academy_full_web_1790428843333.jpg',
-    'proj-9': '/assets/images/raheem_rehab_full_web_1790428879741.jpg',
-    'proj-10': '/assets/images/al_noor_textile_full_web_1790428824308.jpg',
-    'proj-11': '/assets/images/real_estate_web_1791805973161.jpg',
-    'proj-12': '/assets/images/restaurant_web_1791805986623.jpg',
-    'proj-13': '/assets/images/fintech_web_1791806009333.jpg',
-    'proj-14': '/assets/images/cloud_api_web_1791806022294.jpg',
-  };
-
-  if (PROJECT_ID_MAP[project.id]) {
-    return PROJECT_ID_MAP[project.id];
-  }
-
-  return rawUrl || '/assets/images/biztop_full_web_1790852703068.jpg';
-};
-
-export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
-  const [isImgHovered, setIsImgHovered] = useState(false);
+export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, onOpenLiveDemo }) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -74,19 +23,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
 
   if (!project) return null;
 
-  const cleanDomain = (() => {
-    const url = project.liveUrl || (project as any).link || '';
-    if (url) {
-      try {
-        const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
-        return parsed.hostname.replace(/^www\./, '');
-      } catch (_) {
-        return url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
-      }
-    }
-    return `${project.title.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
-  })();
-
+  const cleanDomain = resolveProjectDomain(project);
   const modalImg = resolveProjectImage(project);
 
   return (
@@ -169,7 +106,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
 
           {/* Action Links (GitHub & Live Demo) */}
           <div className="flex flex-wrap items-center gap-3 mb-8 pb-6 border-b border-[#11261B]/10">
-            {project.githubUrl && (
+            {project.githubUrl && project.githubUrl !== '#' && (
               <a
                 href={project.githubUrl}
                 target="_blank"
@@ -181,9 +118,22 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
               </a>
             )}
 
-            {project.liveUrl && (
+            {onOpenLiveDemo ? (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenLiveDemo(project);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#11261B]/20 text-[#11261B] text-xs font-bold uppercase tracking-wider hover:border-[#C5A059] hover:bg-[#F2EDE2] transition-all shadow-xs cursor-pointer"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <Play className="w-3.5 h-3.5 text-[#C5A059] fill-[#C5A059]" />
+                <span>Open Live Interactive Demo</span>
+              </button>
+            ) : (
               <a
-                href={project.liveUrl}
+                href={`/live/${encodeURIComponent(project.id)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#11261B]/20 text-[#11261B] text-xs font-bold uppercase tracking-wider hover:border-[#C5A059] hover:bg-[#F2EDE2] transition-all shadow-xs"
