@@ -36,6 +36,7 @@ import { ResumeModal } from '../components/ResumeModal';
 import { ScrollIsland } from '../components/ScrollIsland';
 import { LiveChatWidget } from '../components/LiveChatWidget';
 import { StartupSplash } from '../components/StartupSplash';
+import { MobileAppInstallBanner } from '../components/PWAInstallButton';
 import { SCROLL_TOPICS } from '../data/scrollTopics';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -254,6 +255,7 @@ export default function HomePage() {
         onOpenFeedback={() => setIsFeedbackModalOpen(true)}
         customLinks={settings?.navbarItems}
       />
+      <MobileAppInstallBanner />
 
       <main className="flex-1 space-y-0 relative min-h-[70vh]">
         {/* Isolated Section Container */}

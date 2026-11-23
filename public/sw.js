@@ -1,5 +1,7 @@
-const CACHE_NAME = 'mushahid-portfolio-pwa-v2';
+const CACHE_NAME = 'mushahid-portfolio-pwa-v3';
 const PRECACHE_ASSETS = [
+  '/',
+  '/manifest.webmanifest',
   '/pwa-192x192.png',
   '/pwa-512x512.png',
   '/pwa-maskable-512x512.png',
@@ -9,10 +11,15 @@ const PRECACHE_ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_ASSETS))
-      .catch(() => undefined)
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(
+        PRECACHE_ASSETS.map((url) =>
+          fetch(url, { credentials: 'include' })
+            .then((res) => (res && res.ok ? cache.put(url, res) : undefined))
+            .catch(() => undefined)
+        )
+      )
+    )
   );
   self.skipWaiting();
 });
@@ -38,17 +45,19 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/_next/webpack')) return;
 
-  // Serve cached static PWA icons & assets fast, fallback cleanly to network
   if (
-    PRECACHE_ASSETS.includes(url.pathname) ||
+    url.pathname === '/manifest.webmanifest' ||
+    url.pathname.startsWith('/pwa-') ||
+    url.pathname === '/apple-touch-icon.png' ||
+    url.pathname === '/favicon.png' ||
     url.pathname.startsWith('/assets/')
   ) {
     event.respondWith(
       caches.match(request).then(
         (cached) =>
           cached ||
-          fetch(request).then((response) => {
-            if (response && response.status === 200) {
+          fetch(request, { credentials: 'include' }).then((response) => {
+            if (response && response.ok) {
               const copy = response.clone();
               caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
             }
@@ -59,10 +68,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network-first for HTML navigations so fresh content & live deployments always load
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => caches.match('/'))
+      fetch(request)
+        .then((response) => {
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('/', copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match('/'))
     );
   }
 });

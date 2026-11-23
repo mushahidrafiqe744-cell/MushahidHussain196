@@ -10,6 +10,7 @@ import {
   ExternalLink,
   FileDown,
   Copy,
+  Share2,
   Share,
 } from 'lucide-react';
 import { DevicePlatform, usePWAInstall } from '../hooks/usePWAInstall';
@@ -30,6 +31,18 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
     setActiveTab(platform);
   }, [platform]);
 
+  // If opened from iframe via /?install=1 in a top-level tab, pop the install modal once ready
+  useEffect(() => {
+    if (variant !== 'navbar' || typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('install') === '1' && !isInstalled) {
+      const timer = setTimeout(() => {
+        setShowInstallModal(true);
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [variant, isInstalled]);
+
   const handleInstallClick = async () => {
     if (isInstallable) {
       const accepted = await install();
@@ -49,6 +62,23 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
     navigator.clipboard?.writeText(window.location.origin || window.location.href);
     setCopiedUrl(true);
     setTimeout(() => setCopiedUrl(false), 2000);
+  };
+
+  const handleShareToPhone = async () => {
+    if (typeof window === 'undefined') return;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Mushahid Dev — Portfolio App',
+          text: 'Install Mushahid Hussain Portfolio App on Mobile or PC:',
+          url: window.location.origin,
+        });
+        return;
+      } catch {
+        // Fallback to copy if share cancelled
+      }
+    }
+    handleCopyUrl();
   };
 
   const handleDownloadOfflinePackage = () => {
@@ -115,7 +145,7 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
           type="button"
           onClick={handleInstallClick}
           className="group inline-flex items-center gap-2.5 pl-2 pr-5 py-2.5 text-xs sm:text-sm font-bold tracking-wider uppercase text-[#DFC285] bg-[#11261B] border border-[#C5A059]/60 hover:bg-[#1A3828] rounded-full transition-all shadow-md hover:scale-105 hover:shadow-xl cursor-pointer animate-shimmer"
-          title="Install App on PC, Android or iPhone with Desktop Logo"
+          title="Install App on PC, Android or iPhone with Desktop & Mobile Logo"
         >
           <img
             src="/pwa-192x192.png"
@@ -188,25 +218,45 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
                   Mushahid Dev
                 </div>
                 <div className="text-[11px] text-[#A3B8A8] mt-0.5 leading-snug">
-                  Install hone ke baad PC Desktop, Android Home Screen aur iPhone par yahi logo show hoga.
+                  Install hone ke baad PC Desktop, Android Screen aur iPhone par yahi Golden Logo app icon show hoga.
                 </div>
               </div>
             </div>
 
+            {/* 1-Click Direct Native Prompt Button when available inside Modal */}
+            {isInstallable && (
+              <button
+                type="button"
+                onClick={async () => {
+                  const ok = await install();
+                  if (ok) {
+                    setShowInstallModal(false);
+                    setToastMode('installed');
+                    setShowSuccessToast(true);
+                    setTimeout(() => setShowSuccessToast(false), 6000);
+                  }
+                }}
+                className="w-full py-3 px-4 rounded-2xl bg-[#11261B] hover:bg-[#1A3828] text-[#DFC285] border-2 border-[#C5A059] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg cursor-pointer transition-all hover:scale-[1.01]"
+              >
+                <Download className="w-4 h-4 text-[#C5A059]" />
+                <span>Click Here to Install App Now</span>
+              </button>
+            )}
+
             {/* Iframe Helper Banner (for AI Studio preview window) */}
-            {isInIframe && (
+            {isInIframe && !isInstallable && (
               <div className="bg-amber-50 border border-amber-300 rounded-2xl p-3.5 space-y-2.5">
                 <p className="text-xs text-amber-950 font-medium leading-relaxed">
-                  Preview frame ke andar direct popup block hota hai. 1-click install ke liye pehle site ko full browser window me kholein:
+                  Preview frame ke andar browser install popup block karta hai. 1-click install ke liye site ko direct window me kholein:
                 </p>
                 <a
-                  href="/"
+                  href="/?install=1"
                   target="_blank"
                   rel="noreferrer"
                   className="w-full py-2.5 px-4 rounded-xl bg-[#11261B] hover:bg-[#1A3828] text-[#DFC285] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-sm"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
-                  <span>Open Full Window & Install</span>
+                  <span>Open Full Window & Install App</span>
                 </a>
               </div>
             )}
@@ -254,10 +304,10 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
                     Address bar ke right side par <strong>Install (⊕)</strong> icon par click karein.
                   </li>
                   <li>
-                    Ya browser menu <strong>⋮ → Cast, save, and share → Install page as app</strong> select karein (Mac Safari: <strong>File → Add to Dock</strong>).
+                    Ya browser menu <strong>⋮ → Cast, save, and share → Install page as app</strong> dabain (Mac Safari: <strong>File → Add to Dock</strong>).
                   </li>
                   <li>
-                    <strong>Install</strong> dabate hi website PC Desktop aur Taskbar par golden logo ke saath app ban jayegi.
+                    <strong>Install</strong> karte hi app khulegi aur PC Desktop & Taskbar par Golden Logo show ho jayega.
                   </li>
                 </ol>
               </div>
@@ -268,13 +318,13 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
                 <p className="font-bold text-[#11261B]">Android Mobile (Chrome / Samsung Browser):</p>
                 <ol className="list-decimal pl-4 space-y-1.5 font-medium">
                   <li>
-                    Top-right me <strong>⋮ (3 dots menu)</strong> par tap karein.
+                    Chrome top-right me <strong>⋮ (3 dots)</strong> par tap karein.
                   </li>
                   <li>
-                    <strong>Install app</strong> ya <strong>Add to Home screen → Install</strong> par tap karein.
+                    <strong>Install app</strong> ya <strong>Add to Home screen → Install</strong> dabain.
                   </li>
                   <li>
-                    App automatic install ho kar Android Home Screen & App Drawer me golden logo ke saath show hogi.
+                    App real mobile app ki tarah install ho kar Home Screen aur App Drawer me Golden Logo ke saath show hogi.
                   </li>
                 </ol>
               </div>
@@ -285,27 +335,27 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
                 <p className="font-bold text-[#11261B]">iPhone / iPad (Safari Browser):</p>
                 <ol className="list-decimal pl-4 space-y-1.5 font-medium">
                   <li>
-                    Website ko <strong>Safari</strong> browser me kholein aur bottom me <strong>Share</strong> icon (box with arrow) par tap karein.
+                    Site ko <strong>Safari</strong> me open karein aur niche <strong>Share</strong> icon (square with arrow) par tap karein.
                   </li>
                   <li>
-                    Niche scroll karke <strong>Add to Home Screen</strong> par tap karein.
+                    Scroll karke <strong>Add to Home Screen</strong> select karein.
                   </li>
                   <li>
-                    Top-right par <strong>Add</strong> dabate hi iPhone Home Screen par golden logo ke saath app icon show ho jayega.
+                    <strong>Add</strong> dabate hi iPhone display par Golden Logo app icon show ho jayega.
                   </li>
                 </ol>
               </div>
             )}
 
-            {/* Footer Utilities: Copy URL & Offline File */}
+            {/* Footer Utilities */}
             <div className="flex flex-wrap gap-2 pt-1">
               <button
                 type="button"
-                onClick={handleCopyUrl}
+                onClick={handleShareToPhone}
                 className="flex-1 py-2.5 px-3 rounded-xl bg-white hover:bg-[#F2EDE2] border border-[#11261B]/20 text-[#11261B] font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
               >
-                {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-[#C5A059]" />}
-                <span>{copiedUrl ? 'Link Copied!' : 'Copy Link for Phone'}</span>
+                {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5 text-[#C5A059]" />}
+                <span>{copiedUrl ? 'Link Copied!' : 'Send / Copy Link'}</span>
               </button>
               <button
                 type="button"
@@ -333,9 +383,122 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ variant = 'n
             </div>
             <div className="text-[10px] text-gray-300">
               {toastMode === 'installed'
-                ? 'Mushahid Dev golden logo is now on your PC Desktop, Android, or iPhone Home Screen.'
+                ? 'Mushahid Dev Golden Logo is now added to your PC Desktop, Android, or iPhone screen.'
                 : 'Check your Downloads folder for Mushahid_Hussain_Portfolio.html.'}
             </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export const MobileAppInstallBanner: React.FC = () => {
+  const { isInstallable, isInstalled, isIOS, isAndroid, isInIframe, install } = usePWAInstall();
+  const [dismissed, setDismissed] = useState(false);
+  const [showMobileGuide, setShowMobileGuide] = useState(false);
+
+  if (isInstalled || dismissed || isInIframe) {
+    return null;
+  }
+
+  // Show sleek native app-store-style install strip on Android & iPhone (mobile screens)
+  if (!isIOS && !isAndroid) {
+    return null;
+  }
+
+  const handleAction = async () => {
+    if (isInstallable) {
+      const accepted = await install();
+      if (accepted) return;
+    }
+    setShowMobileGuide(true);
+  };
+
+  return (
+    <>
+      <div className="md:hidden bg-[#0B1F14] text-white border-b border-[#C5A059]/30 px-3.5 py-2.5 flex items-center justify-between gap-2.5 shadow-md">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <img
+            src="/pwa-192x192.png"
+            alt="Mushahid Dev App Logo"
+            referrerPolicy="no-referrer"
+            className="w-9 h-9 rounded-xl object-cover border border-[#C5A059] shrink-0"
+          />
+          <div className="min-w-0">
+            <div className="text-xs font-bold text-[#F3DFAD] truncate">Mushahid Dev App</div>
+            <div className="text-[10px] text-[#A3B8A8] truncate">
+              {isIOS ? 'Add to iPhone Home Screen' : 'Install App on Mobile Display'}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={handleAction}
+            className="px-3 py-1.5 rounded-lg bg-[#C5A059] text-[#0B1F14] text-[11px] font-black uppercase tracking-wider cursor-pointer shadow-xs"
+          >
+            Install
+          </button>
+          <button
+            type="button"
+            onClick={() => setDismissed(true)}
+            className="p-1 rounded-lg text-gray-400 hover:text-white cursor-pointer"
+            aria-label="Dismiss install banner"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {showMobileGuide && (
+        <div
+          onClick={() => setShowMobileGuide(false)}
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/75 backdrop-blur-xs"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#F8F5EE] text-[#11261B] rounded-3xl p-5 w-full max-w-sm shadow-2xl border border-[#C5A059]/50 space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/pwa-192x192.png"
+                  alt="Mushahid Dev"
+                  referrerPolicy="no-referrer"
+                  className="w-11 h-11 rounded-xl border border-[#C5A059]"
+                />
+                <div>
+                  <h4 className="font-display font-bold text-base">Install on Mobile</h4>
+                  <p className="text-[11px] text-[#5C6E61]">Logo mobile screen par add karein</p>
+                </div>
+              </div>
+              <button type="button" onClick={() => setShowMobileGuide(false)} className="p-1 cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {isIOS ? (
+              <ol className="list-decimal pl-5 space-y-1.5 text-xs font-medium bg-white p-3.5 rounded-2xl border border-[#11261B]/10">
+                <li>Safari me niche <strong>Share ↑</strong> icon dabain.</li>
+                <li>Scroll karke <strong>Add to Home Screen</strong> dabain.</li>
+                <li>Top par <strong>Add</strong> dabain — iPhone display par logo aa jayega.</li>
+              </ol>
+            ) : (
+              <ol className="list-decimal pl-5 space-y-1.5 text-xs font-medium bg-white p-3.5 rounded-2xl border border-[#11261B]/10">
+                <li>Chrome me upar <strong>⋮ (Menu)</strong> dabain.</li>
+                <li><strong>Install app</strong> ya <strong>Add to Home screen</strong> dabain.</li>
+                <li>Android Home Screen par Golden Logo ke saath app install ho jayegi.</li>
+              </ol>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setShowMobileGuide(false)}
+              className="w-full py-2.5 rounded-xl bg-[#11261B] text-[#DFC285] font-bold text-xs cursor-pointer"
+            >
+              Got It
+            </button>
           </div>
         </div>
       )}
