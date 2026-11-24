@@ -10,6 +10,7 @@ import alQuranFullWebImg from '../assets/images/al_quran_full_web_1790428789923.
 import mbaAcademyFullWebImg from '../assets/images/mba_academy_full_web_1790428843333.jpg';
 import raheemRehabFullWebImg from '../assets/images/raheem_rehab_full_web_1790428879741.jpg';
 import alNoorTextileFullWebImg from '../assets/images/al_noor_textile_full_web_1790428824308.jpg';
+import shopNovaStoreFullWebImg from '../assets/images/shopnova_store_full_web.jpg';
 import realEstateWebImg from '../assets/images/real_estate_web_1791805973161.jpg';
 import restaurantWebImg from '../assets/images/restaurant_web_1791805986623.jpg';
 import fintechWebImg from '../assets/images/fintech_web_1791806009333.jpg';
@@ -311,6 +312,22 @@ export const initialProjects: Project[] = [
     image: (alNoorTextileFullWebImg as any)?.src || alNoorTextileFullWebImg,
     imageUrl: (alNoorTextileFullWebImg as any)?.src || alNoorTextileFullWebImg,
     liveUrl: 'https://al-noor-processing-and-textile-mill.vercel.app/',
+    githubUrl: 'https://github.com/mushahidhussain',
+    featured: true,
+    hidden: false,
+  },
+  {
+    id: 'proj-16',
+    title: 'ShopNova — Modern E-Commerce Store',
+    description: 'Full-featured modern e-commerce storefront featuring electronics, watches, sneakers, apparel, smart cart, and admin management.',
+    category: 'ecommerce',
+    categoryLabel: 'E-Commerce',
+    year: '2026',
+    metrics: 'Smart Cart & Admin',
+    technologies: ['React', 'TypeScript', 'Tailwind CSS', 'E-Commerce'],
+    image: (shopNovaStoreFullWebImg as any)?.src || shopNovaStoreFullWebImg,
+    imageUrl: (shopNovaStoreFullWebImg as any)?.src || shopNovaStoreFullWebImg,
+    liveUrl: 'https://alqursh6611.kimi.page/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
     hidden: false,

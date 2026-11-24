@@ -798,11 +798,18 @@ export const LiveSiteRenderer: React.FC<LiveSiteRendererProps> = ({
     );
   }
 
-  // 7. E-COMMERCE STORES (Meer Royal Decor, Novara Store, Al-Noor Textiles)
-  if (id === 'proj-2' || id === 'proj-4' || id === 'proj-10' || titleLower.includes('decor') || titleLower.includes('novara') || titleLower.includes('textile')) {
+  // 7. E-COMMERCE STORES (Meer Royal Decor, Novara Store, Al-Noor Textiles, ShopNova)
+  if (id === 'proj-2' || id === 'proj-4' || id === 'proj-10' || id === 'proj-16' || titleLower.includes('decor') || titleLower.includes('novara') || titleLower.includes('textile') || titleLower.includes('shopnova')) {
+    const isShopNova = id === 'proj-16' || titleLower.includes('shopnova');
     const isTextile = titleLower.includes('textile');
     const isDecor = titleLower.includes('decor');
-    const storeProducts = isDecor
+    const storeProducts = isShopNova
+      ? [
+          { id: 'item1', name: 'NovaSound Pro Wireless Headphones', pkr: 14999, usd: 54, cat: 'Electronics' },
+          { id: 'item2', name: 'Chronos Automatic Steel Watch', pkr: 24500, usd: 88, cat: 'Watches' },
+          { id: 'item3', name: 'AirFlex Runner Sneakers', pkr: 9800, usd: 35, cat: 'Footwear' },
+        ]
+      : isDecor
       ? [
           { id: 'item1', name: 'Royal Velvet Tufted Sofa', pkr: 145000, usd: 520, cat: 'Living Room' },
           { id: 'item2', name: 'Imperial Gold Console Table', pkr: 68000, usd: 245, cat: 'Bespoke' },

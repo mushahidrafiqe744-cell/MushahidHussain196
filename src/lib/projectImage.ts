@@ -29,6 +29,7 @@ export const VERCEL_LIVE_URL_BY_ID: Record<string, string> = {
   'proj-9': 'https://raheem-insdad-e-manshiyat-2gag58lu0-ai-work2.vercel.app/',
   'proj-10': 'https://al-noor-processing-and-textile-mill.vercel.app/',
   'proj-15': 'https://hotel-grand-faisalabad-12-k721.vercel.app/',
+  'proj-16': 'https://alqursh6611.kimi.page/',
 };
 
 export const isPlaceholderDemoDomain = (url?: string): boolean => {
@@ -66,6 +67,7 @@ export const resolveLiveProjectUrl = (project: Pick<Project, 'id' | 'title' | 'l
   if (titleLower.includes('raheem') || titleLower.includes('rehab') || titleLower.includes('manshiyat')) return VERCEL_LIVE_URL_BY_ID['proj-9'];
   if (titleLower.includes('noor') || titleLower.includes('textile')) return VERCEL_LIVE_URL_BY_ID['proj-10'];
   if (titleLower.includes('hotel grand') || titleLower.includes('faisalabad')) return VERCEL_LIVE_URL_BY_ID['proj-15'];
+  if (titleLower.includes('shopnova') || titleLower.includes('alqursh')) return VERCEL_LIVE_URL_BY_ID['proj-16'];
 
   return raw || '';
 };
@@ -99,6 +101,7 @@ export const resolveProjectDomain = (project: Project): string => {
   if (titleLower.includes('rehab') || titleLower.includes('raheem')) return 'raheem-insdad-e-manshiyat-2gag58lu0-ai-work2.vercel.app';
   if (titleLower.includes('textile') || titleLower.includes('noor')) return 'al-noor-processing-and-textile-mill.vercel.app';
   if (titleLower.includes('hotel grand') || titleLower.includes('faisalabad')) return 'hotel-grand-faisalabad-12-k721.vercel.app';
+  if (titleLower.includes('shopnova') || titleLower.includes('alqursh')) return 'alqursh6611.kimi.page';
   if (titleLower.includes('estate') || titleLower.includes('horizon')) return 'horizonluxuryrealestate.com';
 
   const slug = (project.title || 'project').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -133,6 +136,7 @@ export const resolveProjectImage = (project: Project): string => {
   if (titleLower.includes('finedge') || titleLower.includes('wealth')) return '/assets/images/fintech_web_1791806009333.jpg';
   if (titleLower.includes('cloudpulse') || titleLower.includes('microservice')) return '/assets/images/cloud_api_web_1791806022294.jpg';
   if (titleLower.includes('biztop')) return '/assets/images/biztop_full_web_1790852703068.jpg';
+  if (titleLower.includes('shopnova') || titleLower.includes('alqursh')) return '/assets/images/shopnova_store_full_web.jpg';
 
   const PROJECT_ID_MAP: Record<string, string> = {
     'proj-1': '/assets/images/biztop_full_web_1790852703068.jpg',
@@ -150,6 +154,7 @@ export const resolveProjectImage = (project: Project): string => {
     'proj-13': '/assets/images/fintech_web_1791806009333.jpg',
     'proj-14': '/assets/images/cloud_api_web_1791806022294.jpg',
     'proj-15': '/assets/images/grand_pavilion_1790426037130.jpg',
+    'proj-16': '/assets/images/shopnova_store_full_web.jpg',
   };
 
   if (PROJECT_ID_MAP[project.id]) {

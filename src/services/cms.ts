@@ -197,6 +197,7 @@ const ORIGINAL_PROJECT_IMAGES: Record<string, string> = {
   'proj-12': '/assets/images/restaurant_web_1791805986623.jpg',
   'proj-13': '/assets/images/fintech_web_1791806009333.jpg',
   'proj-14': '/assets/images/cloud_api_web_1791806022294.jpg',
+  'proj-16': '/assets/images/shopnova_store_full_web.jpg',
 };
 
 const mapDbToFrontend = (item: any) => {
