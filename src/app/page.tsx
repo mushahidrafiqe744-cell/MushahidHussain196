@@ -39,6 +39,8 @@ import { StartupSplash } from '../components/StartupSplash';
 import { MobileAppInstallBanner } from '../components/PWAInstallButton';
 import { SCROLL_TOPICS } from '../data/scrollTopics';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { AnimatePresence, motion, MotionConfig } from 'motion/react';
+import { STUDIO_EASE } from '../components/MotionPrimitives';
 
 const SECTION_HASH_MAP: Record<string, SectionId> = {
   hero: 'hero', home: 'hero', about: 'about', services: 'services',
@@ -245,82 +247,102 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F5EE] text-[#11261B]" style={{ fontFamily: settings?.fontFamily || 'Inter, sans-serif' }}>
-      <StartupSplash name={profile?.name} title={profile?.title} />
-      <Navbar
-        profile={profile}
-        activeSection={activeSection}
-        onSelectSection={handleSelectSection}
-        onOpenResume={() => setIsResumeModalOpen(true)}
-        onOpenFeedback={() => setIsFeedbackModalOpen(true)}
-        customLinks={settings?.navbarItems}
-      />
-      <MobileAppInstallBanner />
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen flex flex-col bg-[#F8F5EE] text-[#11261B]" style={{ fontFamily: settings?.fontFamily || 'Inter, sans-serif' }}>
+        <StartupSplash name={profile?.name} title={profile?.title} />
+        <Navbar
+          profile={profile}
+          activeSection={activeSection}
+          onSelectSection={handleSelectSection}
+          onOpenResume={() => setIsResumeModalOpen(true)}
+          onOpenFeedback={() => setIsFeedbackModalOpen(true)}
+          customLinks={settings?.navbarItems}
+        />
+        <MobileAppInstallBanner />
 
-      <main className="flex-1 space-y-0 relative min-h-[70vh]">
-        {/* Isolated Section Container */}
-        <div key={activeSection} className="animate-fade-in">
-          {renderCurrentSection()}
-        </div>
-
-        {/* Section Navigation Controller (Previous / Next) */}
-        <div className="max-w-4xl mx-auto my-8 px-4">
-          <div className="bg-white/90 backdrop-blur-md border border-[#11261B]/15 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-4 flex-wrap">
-            <button
-              onClick={navigatePrev}
-              disabled={currentSectionIdx <= 0}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
-                currentSectionIdx <= 0
-                  ? 'opacity-30 cursor-not-allowed border-gray-200 text-gray-400'
-                  : 'border-[#11261B]/15 text-[#11261B] hover:bg-[#11261B] hover:text-[#C5A059] cursor-pointer'
-              }`}
+        <main className="flex-1 space-y-0 relative min-h-[70vh]">
+          {/* Isolated Section Container with Studio Slide+Fade Transition */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.34, ease: STUDIO_EASE }}
             >
-              <ChevronLeft className="w-4 h-4" />
-              <span>
-                {currentSectionIdx > 0
-                  ? `Previous: ${SECTIONS_ORDER[currentSectionIdx - 1]?.name}`
-                  : 'Previous'}
-              </span>
-            </button>
+              {renderCurrentSection()}
+            </motion.div>
+          </AnimatePresence>
 
-            <div className="text-center">
-              <span className="text-xs font-bold text-[#C5A059] uppercase tracking-wider block">
-                {SECTIONS_ORDER[currentSectionIdx]?.name || 'Section'}
-              </span>
-              <span className="text-[11px] text-[#5C6E61] font-semibold">
-                Section {Math.max(1, currentSectionIdx + 1)} of {SECTIONS_ORDER.length}
-              </span>
+          {/* Section Navigation Controller (Previous / Next) */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, ease: STUDIO_EASE }}
+            className="max-w-4xl mx-auto my-8 px-4"
+          >
+            <div className="bg-white/90 backdrop-blur-md border border-[#11261B]/15 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-4 flex-wrap">
+              <motion.button
+                whileHover={currentSectionIdx > 0 ? { x: -3, scale: 1.02 } : undefined}
+                whileTap={currentSectionIdx > 0 ? { scale: 0.97 } : undefined}
+                onClick={navigatePrev}
+                disabled={currentSectionIdx <= 0}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-colors border ${
+                  currentSectionIdx <= 0
+                    ? 'opacity-30 cursor-not-allowed border-gray-200 text-gray-400'
+                    : 'border-[#11261B]/15 text-[#11261B] hover:bg-[#11261B] hover:text-[#C5A059] cursor-pointer'
+                }`}
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>
+                  {currentSectionIdx > 0
+                    ? `Previous: ${SECTIONS_ORDER[currentSectionIdx - 1]?.name}`
+                    : 'Previous'}
+                </span>
+              </motion.button>
+
+              <div className="text-center">
+                <span className="text-xs font-bold text-[#C5A059] uppercase tracking-wider block">
+                  {SECTIONS_ORDER[currentSectionIdx]?.name || 'Section'}
+                </span>
+                <span className="text-[11px] text-[#5C6E61] font-semibold">
+                  Section {Math.max(1, currentSectionIdx + 1)} of {SECTIONS_ORDER.length}
+                </span>
+              </div>
+
+              <motion.button
+                whileHover={currentSectionIdx < SECTIONS_ORDER.length - 1 ? { x: 3, scale: 1.02 } : undefined}
+                whileTap={currentSectionIdx < SECTIONS_ORDER.length - 1 ? { scale: 0.97 } : undefined}
+                onClick={navigateNext}
+                disabled={currentSectionIdx >= SECTIONS_ORDER.length - 1}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-colors border ${
+                  currentSectionIdx >= SECTIONS_ORDER.length - 1
+                    ? 'opacity-30 cursor-not-allowed border-gray-200 text-gray-400'
+                    : 'border-[#11261B]/15 text-[#11261B] hover:bg-[#11261B] hover:text-[#C5A059] cursor-pointer'
+                }`}
+              >
+                <span>
+                  {currentSectionIdx < SECTIONS_ORDER.length - 1
+                    ? `Next: ${SECTIONS_ORDER[currentSectionIdx + 1]?.name}`
+                    : 'Next'}
+                </span>
+                <ChevronRight className="w-4 h-4" />
+              </motion.button>
             </div>
-
-            <button
-              onClick={navigateNext}
-              disabled={currentSectionIdx >= SECTIONS_ORDER.length - 1}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
-                currentSectionIdx >= SECTIONS_ORDER.length - 1
-                  ? 'opacity-30 cursor-not-allowed border-gray-200 text-gray-400'
-                  : 'border-[#11261B]/15 text-[#11261B] hover:bg-[#11261B] hover:text-[#C5A059] cursor-pointer'
-              }`}
-            >
-              <span>
-                {currentSectionIdx < SECTIONS_ORDER.length - 1
-                  ? `Next: ${SECTIONS_ORDER[currentSectionIdx + 1]?.name}`
-                  : 'Next'}
-              </span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </main>
-      <Footer profile={profile} onSelectSection={handleSelectSection} />
-      <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} onOpenLiveDemo={setLiveDemoProject} />
-      {liveDemoProject && (
-        <LiveProjectDemo project={liveDemoProject} onClose={() => setLiveDemoProject(null)} />
-      )}
-      <ResumeModal isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} profile={profile} projects={projects} skillGroups={skills} experiences={experiences} courses={courses} />
-      <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />
-      <ScrollIsland topics={SCROLL_TOPICS} />
-      <LiveChatWidget profile={profile} onOpenOwnerPanel={() => { if (typeof window !== 'undefined') window.location.href = '/admin'; }} />
-    </div>
+          </motion.div>
+        </main>
+        <Footer profile={profile} onSelectSection={handleSelectSection} />
+        <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} onOpenLiveDemo={setLiveDemoProject} />
+        {liveDemoProject && (
+          <LiveProjectDemo project={liveDemoProject} onClose={() => setLiveDemoProject(null)} />
+        )}
+        <ResumeModal isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} profile={profile} projects={projects} skillGroups={skills} experiences={experiences} courses={courses} />
+        <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />
+        <ScrollIsland topics={SCROLL_TOPICS} />
+        <LiveChatWidget profile={profile} onOpenOwnerPanel={() => { if (typeof window !== 'undefined') window.location.href = '/admin'; }} />
+      </div>
+    </MotionConfig>
   );
 }
 

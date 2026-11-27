@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { motion } from 'motion/react';
 import { 
   Calendar, 
   MapPin, 
@@ -13,6 +16,7 @@ import {
   Youtube
 } from 'lucide-react';
 import { DeveloperProfile } from '../types/portfolio';
+import { RevealItem, STUDIO_EASE } from './MotionPrimitives';
 import aboutImage from '../assets/images/about_primary_new.jpg';
 import aboutHoverImage from '../assets/images/about_new_portrait.jpg';
 import cvPortrait from '../assets/images/about_new_portrait_2.jpg';
@@ -48,47 +52,62 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
           <div className="lg:col-span-5 flex flex-col items-start text-left">
             
             {/* ABOUT ME Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#11261B]/40 border border-[#50E364]/30 text-[11px] font-bold tracking-[0.2em] text-[#50E364] mb-5">
+            <RevealItem delay={0.04} y={22} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#11261B]/40 border border-[#50E364]/30 text-[11px] font-bold tracking-[0.2em] text-[#50E364] mb-5">
               <User className="w-3.5 h-3.5 text-[#50E364]" />
               <span>ABOUT ME</span>
-            </div>
+            </RevealItem>
 
             {/* Massive Display Name: I'm {profile.name}! */}
-            <h2 className="font-display text-5xl sm:text-6xl xl:text-7xl font-black tracking-tight leading-[1.05] text-white mb-6 select-none">
-              I'm <span className="bg-gradient-to-r from-white via-[#DFC285] to-[#C5A059] bg-clip-text text-transparent drop-shadow-sm font-extrabold">{profile.name.split(' ')[0]}!</span>
-            </h2>
+            <RevealItem delay={0.1} y={28}>
+              <h2 className="font-display text-5xl sm:text-6xl xl:text-7xl font-black tracking-tight leading-[1.05] text-white mb-6 select-none">
+                I'm <span className="bg-gradient-to-r from-white via-[#DFC285] to-[#C5A059] bg-clip-text text-transparent drop-shadow-sm font-extrabold">{profile.name.split(' ')[0]}!</span>
+              </h2>
+            </RevealItem>
 
             {/* Small green bar separator */}
-            <div className="w-16 h-[2px] bg-[#50E364] mb-6 rounded-full" />
+            <motion.div
+              initial={{ scaleX: 0, opacity: 0 }}
+              whileInView={{ scaleX: 1, opacity: 1 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.16, ease: STUDIO_EASE }}
+              style={{ transformOrigin: 'left' }}
+              className="w-16 h-[2px] bg-[#50E364] mb-6 rounded-full"
+            />
 
             {/* Bio Paragraph */}
-            <p className="text-[#A3B8A8] text-sm sm:text-base leading-relaxed mb-4 max-w-lg">
-              {profile.bioAbout}
-            </p>
-            <p className="text-[#5C6E61] text-xs sm:text-sm leading-relaxed mb-8 max-w-lg">
-              {profile.bioHero}
-            </p>
+            <RevealItem delay={0.18} y={24}>
+              <p className="text-[#A3B8A8] text-sm sm:text-base leading-relaxed mb-4 max-w-lg">
+                {profile.bioAbout}
+              </p>
+              <p className="text-[#5C6E61] text-xs sm:text-sm leading-relaxed mb-8 max-w-lg">
+                {profile.bioHero}
+              </p>
+            </RevealItem>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
+            <RevealItem delay={0.24} y={22} className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
               {/* View My Work (Vibrant green spring capsule) */}
-              <a
+              <motion.a
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
                 href="#projects"
-                className="group inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#50E364] hover:bg-[#60EA77] text-[#030F07] text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 shadow-[0_4px_20px_rgba(80,227,100,0.25)] hover:shadow-[0_4px_30px_rgba(80,227,100,0.4)] hover:scale-[1.03] cursor-pointer"
+                className="group inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#50E364] hover:bg-[#60EA77] text-[#030F07] text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors duration-300 shadow-[0_4px_20px_rgba(80,227,100,0.25)] hover:shadow-[0_4px_30px_rgba(80,227,100,0.4)] cursor-pointer"
               >
                 <span>View My Work</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 duration-300" />
-              </a>
+              </motion.a>
 
               {/* Contact Me (Transparent border pill) */}
-              <a
+              <motion.a
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
                 href="#contact"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-transparent border border-white/20 hover:border-[#C5A059] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all hover:bg-white/5 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-transparent border border-white/20 hover:border-[#C5A059] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors hover:bg-white/5 cursor-pointer"
               >
                 <Mail className="w-4 h-4 text-[#C5A059]" />
                 <span>Contact Me</span>
-              </a>
-            </div>
+              </motion.a>
+            </RevealItem>
 
             {/* Social Links with Horizontal Lines at bottom */}
             <div className="flex items-center gap-4 w-full mt-10">
@@ -150,7 +169,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
           </div>
 
           {/* ================= CENTER COLUMN: METADATA OUTLINE CARD ================= */}
-          <div className="lg:col-span-3 flex justify-center w-full">
+          <RevealItem delay={0.14} y={36} scale={0.96} hoverY={-4} className="lg:col-span-3 flex justify-center w-full">
             <div className="w-full max-w-sm bg-[#05140A]/60 backdrop-blur-md border border-[#11261B]/80 rounded-2xl p-6 md:p-7 flex flex-col gap-6 shadow-[0_12px_40px_rgba(3,15,7,0.8)] relative before:absolute before:inset-0 before:rounded-2xl before:border before:border-[#50E364]/10 before:pointer-events-none">
               
               {/* Card 1: Experience Start */}
@@ -217,13 +236,17 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
               </div>
 
             </div>
-          </div>
+          </RevealItem>
 
           {/* ================= RIGHT COLUMN: PORTRAIT WITH GOLDEN SIGNATURE ================= */}
-          <div className="lg:col-span-4 flex justify-center items-center relative">
+          <RevealItem delay={0.22} y={36} scale={0.94} className="lg:col-span-4 flex justify-center items-center relative">
             
             {/* Main portrait image wrapper matching Pinterest pin */}
-            <div className="relative w-full max-w-[320px] sm:max-w-[360px] aspect-[4/5] overflow-hidden rounded-2xl group shadow-[0_20px_50px_rgba(3,12,6,0.9)] border border-white/10 cursor-pointer">
+            <motion.div
+              whileHover={{ y: -6 }}
+              transition={{ duration: 0.28, ease: STUDIO_EASE }}
+              className="relative w-full max-w-[320px] sm:max-w-[360px] aspect-[4/5] overflow-hidden rounded-2xl group shadow-[0_20px_50px_rgba(3,12,6,0.9)] border border-white/10 cursor-pointer"
+            >
               
               {/* Portrait Image */}
               <img 
@@ -258,7 +281,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
                   {profile.title || 'WEB DEVELOPER'}
                 </span>
               </div>
-            </div>
+            </motion.div>
 
             {/* Vertical slogan ribbon on far right */}
             <div className="absolute right-[-4%] top-1/2 -translate-y-1/2 translate-x-1/2 rotate-90 hidden xl:flex items-center gap-2.5 text-[9px] font-bold tracking-[0.4em] uppercase text-white/30 whitespace-nowrap">
@@ -269,7 +292,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
               <span>INNOVATE</span>
             </div>
 
-          </div>
+          </RevealItem>
 
         </div>
       </div>

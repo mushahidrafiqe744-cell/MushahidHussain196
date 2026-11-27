@@ -1,6 +1,10 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { Sparkles, CheckCircle2, LayoutGrid, Sliders } from 'lucide-react';
 import { SkillGroup } from '../types/portfolio';
+import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
 
 interface SkillItemData {
   name: string;
@@ -192,21 +196,31 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({ skillGroups }) => 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30">
+          <RevealItem delay={0.04} y={20} className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30">
             <Sparkles className="w-3.5 h-3.5 animate-spin-slow" />
             <span>TECHNICAL EXPERTISE</span>
             <Sparkles className="w-3.5 h-3.5 animate-spin-slow" />
-          </div>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4">
-            My Skills & Tech Stack
-          </h2>
-          <div className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full" />
-          <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed mb-6">
-            A battle-tested set of languages, frameworks, libraries, and engineering practices running in continuous view.
-          </p>
+          </RevealItem>
+          <RevealItem delay={0.1} y={28}>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4">
+              My Skills & Tech Stack
+            </h2>
+          </RevealItem>
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.14, ease: STUDIO_EASE }}
+            className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full"
+          />
+          <RevealItem delay={0.16} y={20}>
+            <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed mb-6">
+              A battle-tested set of languages, frameworks, libraries, and engineering practices running in continuous view.
+            </p>
+          </RevealItem>
 
           {/* View Mode Switcher */}
-          <div className="inline-flex p-1 rounded-xl bg-white border border-gray-200 shadow-2xs">
+          <RevealItem delay={0.2} y={18} className="inline-flex p-1 rounded-xl bg-white border border-gray-200 shadow-2xs">
             <button
               onClick={() => setViewMode('marquee')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
@@ -229,30 +243,32 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({ skillGroups }) => 
               <LayoutGrid className="w-3.5 h-3.5" />
               <span>Grid View</span>
             </button>
-          </div>
+          </RevealItem>
         </div>
 
         {/* Category Filters */}
-        <div className="flex items-center justify-center gap-2 mb-10 overflow-x-auto pb-2">
+        <RevealItem delay={0.22} y={18} className="flex items-center justify-center gap-2 mb-10 overflow-x-auto pb-2">
           {categories.map((cat) => (
-            <button
+            <motion.button
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.96 }}
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap shadow-2xs cursor-pointer capitalize ${
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-colors whitespace-nowrap shadow-2xs cursor-pointer capitalize ${
                 selectedCategory === cat
                   ? 'bg-[#11261B] text-white shadow-sm'
                   : 'bg-white text-[#5C6E61] hover:text-[#11261B] hover:bg-[#F8F5EE] border border-[#11261B]/10'
               }`}
             >
               {cat === 'all' ? 'All Technologies' : cat}
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </RevealItem>
       </div>
 
       {/* Running Marquee Rows (Like Testimonials) */}
       {viewMode === 'marquee' ? (
-        <div className="w-full space-y-4 py-4 marquee-pause overflow-hidden">
+        <RevealItem delay={0.1} y={28} className="w-full space-y-4 py-4 marquee-pause overflow-hidden">
           {/* Row 1: Scrolling Left */}
           <div className="flex overflow-hidden">
             <div className="animate-marquee-left flex py-1">
@@ -279,20 +295,22 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({ skillGroups }) => 
               ))}
             </div>
           </div>
-        </div>
+        </RevealItem>
       ) : (
         /* Grid View */
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-16">
             {filtered.map((skill, index) => (
-              <SkillCard key={`${skill.category}-${skill.name}-${index}`} skill={skill} />
+              <RevealCard key={`${skill.category}-${skill.name}-${index}`} index={index} columns={4} hoverY={-6}>
+                <SkillCard skill={skill} />
+              </RevealCard>
             ))}
           </div>
         </div>
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-        <div className="bg-[#11261B] text-white p-8 sm:p-10 rounded-2xl border border-[#C5A059]/30 shadow-lg relative overflow-hidden">
+        <RevealItem delay={0.08} y={32} className="bg-[#11261B] text-white p-8 sm:p-10 rounded-2xl border border-[#C5A059]/30 shadow-lg relative overflow-hidden">
           <div className="max-w-3xl mb-8">
             <div className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#C5A059] mb-1">
               ENGINEERING STANDARDS
@@ -307,19 +325,22 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({ skillGroups }) => 
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {engineeringPractices.map((practice, index) => (
-              <div
+              <RevealCard
                 key={index}
-                className="flex items-start gap-3 bg-white/5 p-4 rounded-xl border border-white/10 hover:border-[#C5A059]/50 hover:bg-white/10 transition-all duration-300 group"
+                index={index}
+                columns={3}
+                hoverY={-4}
+                className="flex items-start gap-3 bg-white/5 p-4 rounded-xl border border-white/10 hover:border-[#C5A059]/50 hover:bg-white/10 transition-colors duration-300 group"
               >
                 <CheckCircle2 className="w-4 h-4 text-[#C5A059] shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
                 <div>
                   <h4 className="text-xs font-bold text-white mb-1 group-hover:text-[#C5A059] transition-colors">{practice.title}</h4>
                   <p className="text-[11px] text-[#A3B8A8] leading-relaxed">{practice.desc}</p>
                 </div>
-              </div>
+              </RevealCard>
             ))}
           </div>
-        </div>
+        </RevealItem>
       </div>
 
     </section>

@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import {
   Layout,
   Layers,
@@ -17,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Service } from '../types/portfolio';
 import { ServiceOrderModal, ServiceItemData } from './ServiceOrderModal';
+import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
 
 interface ServicesSectionProps {
   services: Service[];
@@ -316,43 +320,54 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, admi
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer">
+          <RevealItem delay={0.04} y={20} className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer">
             <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
             <span>SPECIALIZED OFFERINGS</span>
             <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
-          </div>
+          </RevealItem>
 
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
-            {titleLetters.map((char, index) => (
-              <span key={index} className="hover-letter-bounce cursor-pointer">
-                {char === ' ' ? '\u00A0' : char}
-              </span>
-            ))}
-          </h2>
-          <div className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full" />
-          <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed mb-4">
-            Comprehensive web engineering services tailored to bring high-performance web applications from concept to production.
-          </p>
+          <RevealItem delay={0.1} y={28}>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
+              {titleLetters.map((char, index) => (
+                <span key={index} className="hover-letter-bounce cursor-pointer">
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              ))}
+            </h2>
+          </RevealItem>
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.14, ease: STUDIO_EASE }}
+            className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full"
+          />
+          <RevealItem delay={0.16} y={20}>
+            <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed mb-4">
+              Comprehensive web engineering services tailored to bring high-performance web applications from concept to production.
+            </p>
+          </RevealItem>
 
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#11261B] text-[#DFC285] border border-[#C5A059]/40 text-xs sm:text-sm font-bold shadow-md animate-shimmer">
+          <RevealItem delay={0.22} y={20} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#11261B] text-[#DFC285] border border-[#C5A059]/40 text-xs sm:text-sm font-bold shadow-md animate-shimmer">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>✨ Custom Website Development Starting from ₨ 20,000 (PKR) / $150</span>
-          </div>
+          </RevealItem>
         </div>
 
-        {/* Services Grid (8 dedicated cards with 00 -> 01/02/03/04/05/06/07/08 dynamic count-up on hover) */}
+        {/* Services Grid (8 dedicated cards with 00 -> 01/02/03/04/05/06/07/08 staggered reveal & count-up) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {serviceDetails.map((service) => (
-            <ServiceCard
-              key={service.id}
-              service={service}
-              onOrder={(srv) => setSelectedServiceForOrder(srv)}
-            />
+          {serviceDetails.map((service, idx) => (
+            <RevealCard key={service.id} index={idx} columns={4} hoverY={-8} className="flex">
+              <ServiceCard
+                service={service}
+                onOrder={(srv) => setSelectedServiceForOrder(srv)}
+              />
+            </RevealCard>
           ))}
         </div>
 
         {/* Bottom CTA Bar with Pulse & Direct WhatsApp Order Action */}
-        <div className="mt-12 p-6 rounded-2xl bg-[#11261B] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl border border-[#C5A059]/30 animate-shimmer hover:scale-[1.01] transition-all">
+        <RevealItem delay={0.12} y={32} className="mt-12 p-6 rounded-2xl bg-[#11261B] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl border border-[#C5A059]/30 animate-shimmer hover:scale-[1.01] transition-transform">
           <div className="flex items-center gap-3">
             <div className="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-ping" />
             <div>
@@ -366,16 +381,18 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, admi
               <div className="text-xs text-[#A3B8A8]">Click any card above to place an order, or discuss directly with the developer.</div>
             </div>
           </div>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.96 }}
             type="button"
             onClick={() => setSelectedServiceForOrder(serviceDetails[0])}
-            className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 shrink-0 shadow-lg shadow-[#25D366]/25 hover:scale-105 hover:shadow-2xl cursor-pointer"
+            className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold uppercase tracking-wider transition-colors duration-300 shrink-0 shadow-lg shadow-[#25D366]/25 hover:shadow-2xl cursor-pointer"
           >
             <MessageCircle className="w-4 h-4 fill-white" />
             <span>Order Website on WhatsApp</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
+          </motion.button>
+        </RevealItem>
 
       </div>
 

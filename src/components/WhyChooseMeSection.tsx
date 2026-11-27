@@ -1,5 +1,9 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { Lightbulb, Sparkles, Zap } from 'lucide-react';
+import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
 
 interface WorkflowStep {
   targetNum: number;
@@ -65,27 +69,37 @@ export const WhyChooseMeSection: React.FC<WhyChooseMeProps> = ({ pillars, workfl
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer">
+          <RevealItem delay={0.04} y={20} className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer">
             <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
             <span>VALUE PROPOSITION</span>
             <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
-          </div>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
-            {titleChars.map((char, index) => (
-              <span key={index} className="hover-letter-bounce cursor-pointer">{char === ' ' ? '\u00A0' : char}</span>
-            ))}
-          </h2>
-          <div className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full" />
-          <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
-            I craft high-performance digital products engineered to scale with your business goals.
-          </p>
+          </RevealItem>
+          <RevealItem delay={0.1} y={28}>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
+              {titleChars.map((char, index) => (
+                <span key={index} className="hover-letter-bounce cursor-pointer">{char === ' ' ? '\u00A0' : char}</span>
+              ))}
+            </h2>
+          </RevealItem>
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.14, ease: STUDIO_EASE }}
+            className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full"
+          />
+          <RevealItem delay={0.16} y={20}>
+            <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
+              I craft high-performance digital products engineered to scale with your business goals.
+            </p>
+          </RevealItem>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-16">
           {pillars.map((pillar, idx) => {
             const indexNum = String(idx + 1).padStart(2, '0');
             return (
-              <div key={pillar.id || idx} className="bg-[#F2EDE2] p-6 rounded-2xl border border-[#11261B]/10 hover:border-[#C5A059] shadow-xs hover:shadow-xl transition-all duration-500 flex flex-col justify-between group hover:-translate-y-2 animate-shimmer relative overflow-hidden">
+              <RevealCard key={pillar.id || idx} index={idx} columns={5} hoverY={-8} className="bg-[#F2EDE2] p-6 rounded-2xl border border-[#11261B]/10 hover:border-[#C5A059] shadow-xs hover:shadow-xl transition-colors duration-500 flex flex-col justify-between group animate-shimmer relative overflow-hidden">
                 <div className="absolute top-3 right-3 font-mono font-bold text-xs text-[#11261B]/20 group-hover:text-[#C5A059] transition-colors">#{indexNum}</div>
                 <div>
                   <div className="w-14 h-14 rounded-2xl bg-[#11261B] text-[#C5A059] flex items-center justify-center mb-4 shadow-sm border border-[#C5A059]/30 group-hover:scale-110 group-hover:bg-[#1A3828] group-hover:rotate-6 transition-all">
@@ -95,12 +109,12 @@ export const WhyChooseMeSection: React.FC<WhyChooseMeProps> = ({ pillars, workfl
                   <div className="text-xs font-semibold text-[#C5A059] uppercase tracking-wider mb-2.5">{pillar.subtitle}</div>
                   <p className="text-xs text-[#5C6E61] leading-relaxed">{pillar.description}</p>
                 </div>
-              </div>
+              </RevealCard>
             );
           })}
         </div>
 
-        <div className="bg-[#11261B] text-white p-8 sm:p-10 rounded-2xl border border-[#C5A059]/30 shadow-2xl relative overflow-hidden animate-shimmer">
+        <RevealItem delay={0.08} y={36} className="bg-[#11261B] text-white p-8 sm:p-10 rounded-2xl border border-[#C5A059]/30 shadow-2xl relative overflow-hidden animate-shimmer">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A059]/10 rounded-full blur-3xl pointer-events-none" />
           <div className="text-center max-w-2xl mx-auto mb-10 relative z-10">
             <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#C5A059] block mb-1">HOW I WORK</span>
@@ -108,11 +122,13 @@ export const WhyChooseMeSection: React.FC<WhyChooseMeProps> = ({ pillars, workfl
             <p className="text-xs text-[#A3B8A8] mt-2">Hover over each phase to trigger dynamic milestone count-up</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
-            {workflow.map((step) => (
-              <WorkflowCard key={step.id || step.stepNumber} step={{ targetNum: step.stepNumber, title: step.title, desc: step.description }} />
+            {workflow.map((step, idx) => (
+              <RevealCard key={step.id || step.stepNumber} index={idx} columns={4} hoverY={-6}>
+                <WorkflowCard step={{ targetNum: step.stepNumber, title: step.title, desc: step.description }} />
+              </RevealCard>
             ))}
           </div>
-        </div>
+        </RevealItem>
       </div>
     </section>
   );

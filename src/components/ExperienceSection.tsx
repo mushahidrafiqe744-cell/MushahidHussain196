@@ -1,7 +1,11 @@
+'use client';
+
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { Briefcase, Calendar, CheckCircle2, Award, Sparkles, Star, Clock, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { DeveloperProfile } from '../types/portfolio';
 import { HoverCounter } from './HoverCounter';
+import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
 
 interface ExperienceSectionProps {
   profile: DeveloperProfile;
@@ -30,20 +34,30 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile, e
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer">
+          <RevealItem delay={0.04} y={20} className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer">
             <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
             <span>CAREER & TRACK RECORD</span>
             <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
-          </div>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
-            {titleChars.map((char, index) => (
-              <span key={index} className="hover-letter-bounce cursor-pointer">{char === ' ' ? '\u00A0' : char}</span>
-            ))}
-          </h2>
-          <div className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full" />
-          <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
-            A proven record of delivering reliable web software and collaborating across timezones.
-          </p>
+          </RevealItem>
+          <RevealItem delay={0.1} y={28}>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
+              {titleChars.map((char, index) => (
+                <span key={index} className="hover-letter-bounce cursor-pointer">{char === ' ' ? '\u00A0' : char}</span>
+              ))}
+            </h2>
+          </RevealItem>
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.14, ease: STUDIO_EASE }}
+            className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full"
+          />
+          <RevealItem delay={0.16} y={20}>
+            <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
+              A proven record of delivering reliable web software and collaborating across timezones.
+            </p>
+          </RevealItem>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-16">
@@ -51,13 +65,13 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile, e
             const Icon = stat.icon;
             const isHovered = hoveredStat === idx;
             return (
-              <div key={idx} onMouseEnter={() => setHoveredStat(idx)} onMouseLeave={() => setHoveredStat(null)} className={`bg-[#F2EDE2] p-6 rounded-2xl border shadow-xs flex items-center gap-4 transition-all duration-500 group hover:-translate-y-1.5 cursor-pointer ${isHovered ? 'border-[#C5A059] shadow-xl bg-white' : 'border-[#11261B]/10 hover:border-[#C5A059]'}`}>
+              <RevealCard key={idx} index={idx} columns={4} hoverY={-6} onMouseEnter={() => setHoveredStat(idx)} onMouseLeave={() => setHoveredStat(null)} className={`bg-[#F2EDE2] p-6 rounded-2xl border shadow-xs flex items-center gap-4 transition-colors duration-500 group cursor-pointer ${isHovered ? 'border-[#C5A059] shadow-xl bg-white' : 'border-[#11261B]/10 hover:border-[#C5A059]'}`}>
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-xs transition-all duration-300 ${isHovered ? 'bg-[#C5A059] text-[#11261B] scale-110 rotate-6' : 'bg-[#11261B] text-[#C5A059]'}`}><Icon className="w-6 h-6" /></div>
                 <div>
                   <div className="font-display font-bold text-2xl sm:text-3xl text-[#11261B] group-hover:text-[#C5A059] tabular-nums leading-none mb-1 transition-colors"><HoverCounter target={stat.target} suffix={stat.suffix} isParentHovered={isHovered} /></div>
                   <div className="text-xs text-[#5C6E61] font-semibold">{stat.label}</div>
                 </div>
-              </div>
+              </RevealCard>
             );
           })}
         </div>
@@ -65,11 +79,11 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile, e
         <div className="space-y-8 relative">
           <div className="hidden lg:block absolute left-8 top-6 bottom-6 w-0.5 bg-gradient-to-b from-[#C5A059] via-[#11261B]/30 to-transparent" />
           {experiences.map((exp, idx) => (
-            <div key={exp.id || idx} className="relative lg:pl-16 group">
+            <RevealItem key={exp.id || idx} delay={Math.min(idx * 0.08, 0.28)} y={36} scale={0.97} hoverY={-4} className="relative lg:pl-16 group">
               <div className="hidden lg:flex absolute left-6 top-8 w-5 h-5 rounded-full bg-[#11261B] border-2 border-[#C5A059] items-center justify-center shadow-md group-hover:scale-125 transition-all group-hover:bg-[#C5A059]">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#DFC285] group-hover:bg-[#11261B]" />
               </div>
-              <div className="bg-[#F2EDE2] p-6 sm:p-8 rounded-2xl border border-[#11261B]/10 hover:border-[#C5A059] shadow-xs hover:shadow-xl transition-all duration-500 hover:-translate-y-1 animate-shimmer">
+              <div className="bg-[#F2EDE2] p-6 sm:p-8 rounded-2xl border border-[#11261B]/10 hover:border-[#C5A059] shadow-xs hover:shadow-xl transition-colors duration-500 animate-shimmer">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-[#11261B]/10">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
@@ -96,11 +110,11 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile, e
                     </div>
                 )}
               </div>
-            </div>
+            </RevealItem>
           ))}
         </div>
 
-        <div className="mt-14 p-6 sm:p-8 rounded-2xl bg-white border border-[#11261B]/10 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6 group hover:border-[#C5A059] transition-all">
+        <RevealItem delay={0.1} y={28} className="mt-14 p-6 sm:p-8 rounded-2xl bg-white border border-[#11261B]/10 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6 group hover:border-[#C5A059] transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-[#11261B] text-[#C5A059] flex items-center justify-center shrink-0 group-hover:bg-[#C5A059] group-hover:text-[#11261B] transition-all"><Award className="w-6 h-6" /></div>
             <div>
@@ -108,8 +122,8 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile, e
               <h4 className="text-base sm:text-lg font-bold text-[#11261B] mt-0.5">Verified Global Courses & Accreditations</h4>
             </div>
           </div>
-          <a href="#courses" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#11261B] hover:bg-[#C5A059] text-white hover:text-[#11261B] text-xs font-bold tracking-wider uppercase transition-all shadow-sm shrink-0 hover:scale-105"><span>Explore Courses</span><ArrowUpRight className="w-4 h-4 text-[#C5A059]" /></a>
-        </div>
+          <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }} href="#courses" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#11261B] hover:bg-[#C5A059] text-white hover:text-[#11261B] text-xs font-bold tracking-wider uppercase transition-colors shadow-sm shrink-0"><span>Explore Courses</span><ArrowUpRight className="w-4 h-4 text-[#C5A059]" /></motion.a>
+        </RevealItem>
       </div>
     </section>
   );

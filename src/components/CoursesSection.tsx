@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   GraduationCap,
   Award,
@@ -15,6 +18,7 @@ import {
   Check
 } from 'lucide-react';
 import { CourseCertification } from '../types/portfolio';
+import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
 
 interface CoursesSectionProps {
   courses: CourseCertification[];
@@ -43,55 +47,70 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({ courses }) => {
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer shadow-xs">
+          <RevealItem delay={0.04} y={20} className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer shadow-xs">
             <GraduationCap className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
             <span>EDUCATION & ACCREDITATIONS</span>
             <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
-          </div>
+          </RevealItem>
 
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
-            {titleChars.map((char, index) => (
-              <span key={index} className="hover-letter-bounce cursor-pointer">
-                {char === ' ' ? '\u00A0' : char}
-              </span>
-            ))}
-          </h2>
-          <div className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full" />
-          <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
-            Professional specializations, official developer academy badges, and accredited web engineering programs with verified badge images and official institution links.
-          </p>
+          <RevealItem delay={0.1} y={28}>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
+              {titleChars.map((char, index) => (
+                <span key={index} className="hover-letter-bounce cursor-pointer">
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              ))}
+            </h2>
+          </RevealItem>
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.14, ease: STUDIO_EASE }}
+            className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full"
+          />
+          <RevealItem delay={0.16} y={20}>
+            <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
+              Professional specializations, official developer academy badges, and accredited web engineering programs with verified badge images and official institution links.
+            </p>
+          </RevealItem>
         </div>
 
         {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
+        <RevealItem delay={0.2} y={18} className="flex flex-wrap items-center justify-center gap-2 mb-12">
           {categories.map((cat) => (
-            <button
+            <motion.button
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.96 }}
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors duration-300 cursor-pointer ${
                 selectedCategory === cat
-                  ? 'bg-[#11261B] text-[#C5A059] shadow-md scale-105 border border-[#C5A059]/40'
+                  ? 'bg-[#11261B] text-[#C5A059] shadow-md border border-[#C5A059]/40'
                   : 'bg-white text-[#5C6E61] hover:text-[#11261B] border border-[#11261B]/10 hover:border-[#C5A059]/50 shadow-2xs'
               }`}
             >
               {cat === 'all' ? 'All Accreditations' : cat}
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </RevealItem>
 
         {/* Course Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
-          {filteredCourses.map((course) => {
+          {filteredCourses.map((course, idx) => {
             const isHovered = hoveredCourseId === course.id;
 
             return (
-              <div
+              <RevealCard
                 key={course.id}
+                index={idx}
+                columns={3}
+                hoverY={-8}
                 onMouseEnter={() => setHoveredCourseId(course.id)}
                 onMouseLeave={() => setHoveredCourseId(null)}
-                className={`relative bg-white rounded-2xl border transition-all duration-500 p-6 flex flex-col justify-between shadow-xs hover:shadow-2xl group ${
+                className={`relative bg-white rounded-2xl border transition-colors duration-500 p-6 flex flex-col justify-between shadow-xs hover:shadow-2xl group ${
                   isHovered
-                    ? 'border-[#C5A059] -translate-y-2 bg-gradient-to-b from-white to-[#F8F5EE]'
+                    ? 'border-[#C5A059] bg-gradient-to-b from-white to-[#F8F5EE]'
                     : 'border-[#11261B]/10 hover:border-[#C5A059]/40'
                 }`}
               >
@@ -226,13 +245,13 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({ courses }) => {
 
                 </div>
 
-              </div>
+              </RevealCard>
             );
           })}
         </div>
 
         {/* Global Accreditation Guarantee Banner */}
-        <div className="mt-14 p-6 sm:p-8 rounded-2xl bg-[#11261B] text-white border border-[#C5A059]/30 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <RevealItem delay={0.1} y={32} className="mt-14 p-6 sm:p-8 rounded-2xl bg-[#11261B] text-white border border-[#C5A059]/30 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-[#C5A059] text-[#11261B] flex items-center justify-center shrink-0 font-bold shadow-lg">
               <Award className="w-6 h-6" />
@@ -248,26 +267,37 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({ courses }) => {
             </div>
           </div>
 
-          <a
+          <motion.a
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.96 }}
             href="#contact"
-            className="px-6 py-3 rounded-full bg-[#C5A059] hover:bg-[#DFC285] text-[#11261B] text-xs font-bold uppercase tracking-wider transition-all shadow-md shrink-0 hover:scale-105 cursor-pointer text-center"
+            className="px-6 py-3 rounded-full bg-[#C5A059] hover:bg-[#DFC285] text-[#11261B] text-xs font-bold uppercase tracking-wider transition-colors shadow-md shrink-0 cursor-pointer text-center"
           >
             Inquire Credentials
-          </a>
-        </div>
+          </motion.a>
+        </RevealItem>
 
       </div>
 
       {/* Lightbox Modal for Badge Images */}
-      {activeBadgeModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in"
-          onClick={() => setActiveBadgeModal(null)}
-        >
-          <div
-            className="relative max-w-lg w-full bg-[#11261B] text-white rounded-3xl p-6 sm:p-8 border border-[#C5A059]/40 shadow-2xl flex flex-col items-center text-center"
-            onClick={(e) => e.stopPropagation()}
+      <AnimatePresence>
+        {activeBadgeModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            onClick={() => setActiveBadgeModal(null)}
           >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 12 }}
+              transition={{ duration: 0.28, ease: STUDIO_EASE }}
+              className="relative max-w-lg w-full bg-[#11261B] text-white rounded-3xl p-6 sm:p-8 border border-[#C5A059]/40 shadow-2xl flex flex-col items-center text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
             <button
               onClick={() => setActiveBadgeModal(null)}
               className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer transition-colors"
@@ -314,9 +344,10 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({ courses }) => {
                 <span>Visit Official Website ↗</span>
               </a>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </section>
   );
 };

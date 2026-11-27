@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { 
   FileText, 
   Send, 
@@ -103,7 +106,12 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-[#F8F5EE]/95 backdrop-blur-md border-b border-[#11261B]/10 transition-all shadow-xs">
+      <motion.header
+        initial={{ opacity: 0, y: -14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+        className="sticky top-0 z-40 bg-[#F8F5EE]/95 backdrop-blur-md border-b border-[#11261B]/10 transition-all shadow-xs"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 sm:py-2 flex items-center justify-between h-14 sm:h-16">
           
           {/* Brand Logo */}
@@ -160,13 +168,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>CV</span>
             </a>
 
-            <a
+            <motion.a
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
               href="#contact"
               onClick={(e) => {
                 e.preventDefault();
                 handleNavClick('contact');
               }}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold tracking-wider uppercase rounded-lg transition-all shadow-xs hover:scale-[1.02] cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold tracking-wider uppercase rounded-lg transition-colors shadow-xs cursor-pointer ${
                 activeSection === 'contact'
                   ? 'bg-[#C5A059] text-[#11261B]'
                   : 'bg-[#11261B] text-white hover:bg-[#1A3828]'
@@ -174,7 +184,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <span>Let's Talk</span>
               <Send className="w-3 h-3" />
-            </a>
+            </motion.a>
 
             {/* Mobile Menu Button - Keeping it for small devices that might find floating bar too much */}
             <button
@@ -189,25 +199,38 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Mobile Dropdown */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden bg-[#F8F5EE] border-b border-[#11261B]/10 px-4 pt-3 pb-6 space-y-1.5 shadow-xl animate-fade-in">
-            {navItems.map((item, idx) => (
-              <button
-                key={idx}
-                onClick={item.onClick}
-                className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-between ${
-                  item.isActive
-                    ? 'bg-[#11261B] text-[#C5A059]'
-                    : 'text-[#11261B] hover:bg-[#F2EDE2]'
-                }`}
-              >
-                <span>{item.label}</span>
-                {item.isActive && <span className="w-2 h-2 rounded-full bg-[#C5A059]" />}
-              </button>
-            ))}
-          </div>
-        )}
-      </header>
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:hidden overflow-hidden bg-[#F8F5EE] border-b border-[#11261B]/10 shadow-xl"
+            >
+              <div className="px-4 pt-3 pb-6 space-y-1.5">
+                {navItems.map((item, idx) => (
+                  <motion.button
+                    key={idx}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.04, duration: 0.25 }}
+                    onClick={item.onClick}
+                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-between ${
+                      item.isActive
+                        ? 'bg-[#11261B] text-[#C5A059]'
+                        : 'text-[#11261B] hover:bg-[#F2EDE2]'
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {item.isActive && <span className="w-2 h-2 rounded-full bg-[#C5A059]" />}
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.header>
 
       {/* New Tooltip Floating Navbar - visible on all screens */}
       <TooltipNavbar items={navItems} className="bottom-4 sm:bottom-8" />

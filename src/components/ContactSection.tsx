@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import {
   Send,
   Mail,
@@ -27,6 +30,7 @@ import { HoverCounter } from './HoverCounter';
 import { CountryCurrency, WORLD_COUNTRIES } from '../data/worldCountries';
 import { CountryCurrencyModal } from './CountryCurrencyModal';
 import { cmsService } from '../services/cms';
+import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
 
 interface ContactSectionProps {
   profile: DeveloperProfile;
@@ -382,24 +386,28 @@ ${payload.message}`;
           {/* Left Column: Direct Info, Metrics & Editorial Pitch */}
           <div className="lg:col-span-5 flex flex-col justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3.5 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer shadow-xs">
+              <RevealItem delay={0.04} y={20} className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3.5 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer shadow-xs">
                 <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
                 <span>GET IN TOUCH</span>
                 <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
-              </div>
+              </RevealItem>
               
               {/* Interactive Title with Letter-by-Letter Bouncing */}
-              <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
-                {titleChars.map((char, index) => (
-                  <span key={index} className="hover-letter-bounce cursor-pointer">
-                    {char === ' ' ? '\u00A0' : char}
-                  </span>
-                ))}
-              </h2>
+              <RevealItem delay={0.1} y={28}>
+                <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
+                  {titleChars.map((char, index) => (
+                    <span key={index} className="hover-letter-bounce cursor-pointer">
+                      {char === ' ' ? '\u00A0' : char}
+                    </span>
+                  ))}
+                </h2>
+              </RevealItem>
 
-              <p className="text-[#5C6E61] text-base leading-relaxed mb-6">
-                Have a project in mind, need a full-stack web developer for your team, or want to discuss architecture and development? Send me a message and let's bring your vision to life.
-              </p>
+              <RevealItem delay={0.15} y={20}>
+                <p className="text-[#5C6E61] text-base leading-relaxed mb-6">
+                  Have a project in mind, need a full-stack web developer for your team, or want to discuss architecture and development? Send me a message and let's bring your vision to life.
+                </p>
+              </RevealItem>
 
               {/* Dynamic Animated Response Metrics (0 -> Target Count-up on hover) */}
               <div className="grid grid-cols-3 gap-3 mb-8 p-3 rounded-2xl bg-white/70 border border-[#11261B]/10 shadow-xs">
@@ -451,7 +459,7 @@ ${payload.message}`;
               </div>
 
               {/* Direct Contact Cards with Shimmer & Spring Effects */}
-              <div className="space-y-4 mb-8">
+              <RevealItem delay={0.18} y={26} className="space-y-4 mb-8">
                 
                 {/* WhatsApp & Phone Card with Live Pulse */}
                 <div className="p-4 rounded-xl bg-white border border-[#11261B]/10 shadow-xs flex items-center justify-between gap-4 hover:border-[#25D366] hover:shadow-xl transition-all duration-300 animate-shimmer group hover:-translate-y-1">
@@ -582,10 +590,10 @@ ${payload.message}`;
                   </div>
                 </div>
 
-              </div>
+              </RevealItem>
 
               {/* Download CV Banner */}
-              <div className="p-5 rounded-2xl bg-[#11261B] text-white flex items-center justify-between gap-4 border border-[#C5A059]/30 shadow-xl animate-shimmer hover:scale-[1.01] transition-all">
+              <RevealItem delay={0.22} y={24} className="p-5 rounded-2xl bg-[#11261B] text-white flex items-center justify-between gap-4 border border-[#C5A059]/30 shadow-xl animate-shimmer hover:scale-[1.01] transition-transform">
                 <div>
                   <div className="text-xs font-bold uppercase tracking-wider text-[#DFC285] flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />
@@ -595,20 +603,22 @@ ${payload.message}`;
                     Download complete PDF resume & technical achievements
                   </div>
                 </div>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={onOpenResume}
-                  className="px-4 py-2.5 rounded-xl bg-[#C5A059] hover:bg-[#DFC285] text-[#11261B] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 shadow-md hover:scale-105 cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-[#C5A059] hover:bg-[#DFC285] text-[#11261B] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shrink-0 shadow-md cursor-pointer"
                 >
                   <FileText className="w-3.5 h-3.5" />
                   <span>Resume</span>
-                </button>
-              </div>
+                </motion.button>
+              </RevealItem>
 
             </div>
           </div>
 
           {/* Right Column: Interactive Animated Contact Form */}
-          <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-[#11261B]/10 shadow-2xl relative overflow-hidden animate-shimmer">
+          <RevealItem delay={0.14} y={36} scale={0.98} className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-[#11261B]/10 shadow-2xl relative overflow-hidden animate-shimmer">
             
             {submitted ? (
               <div className="py-12 text-center flex flex-col items-center justify-center animate-fade-in">
@@ -948,7 +958,7 @@ ${payload.message}`;
               </div>
             )}
 
-          </div>
+          </RevealItem>
 
         </div>
 

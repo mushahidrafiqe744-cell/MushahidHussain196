@@ -1,8 +1,12 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { Github, ArrowUpRight, Search, Code, Sparkles, Layers, MessageCircle, ChevronLeft, ChevronRight, LayoutGrid, Sliders, FolderGit2, Cpu, ShoppingCart, Terminal, Play } from 'lucide-react';
 import { Project } from '../types/portfolio';
 import { resolveProjectImage, resolveProjectDomain } from '../lib/projectImage';
 import { LiveProjectDemo } from './LiveProjectDemo';
+import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
 
 interface ProjectsSectionProps {
   projects: Project[];
@@ -54,7 +58,7 @@ const ProjectCard: React.FC<{
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group bg-[#F2EDE2] rounded-2xl border border-[#11261B]/10 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-1.5 animate-shimmer"
+      className="group bg-[#F2EDE2] rounded-2xl border border-[#11261B]/10 overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 flex flex-col justify-between animate-shimmer"
     >
       <div>
         {/* Realistic Browser Mockup Frame */}
@@ -228,7 +232,7 @@ const ProjectCard: React.FC<{
 export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSelectProject, onOpenLiveDemo }) => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [viewMode, setViewMode] = useState<'grid' | 'slider'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'slider'>('slider');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
   const [localLiveProject, setLocalLiveProject] = useState<Project | null>(null);
@@ -302,7 +306,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-[#11261B]/10">
+        <RevealItem delay={0.04} y={24} className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-[#11261B]/10">
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-1.5 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer">
               <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
@@ -330,6 +334,18 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
             {/* View Mode Toggle */}
             <div className="flex bg-[#F2EDE2] border border-[#11261B]/15 rounded-xl p-1 shrink-0">
               <button
+                onClick={() => setViewMode('slider')}
+                className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'slider'
+                    ? 'bg-[#11261B] text-[#DFC285] shadow-xs'
+                    : 'text-[#5C6E61] hover:text-[#11261B]'
+                }`}
+                title="3D Fanned Showcase Slider"
+              >
+                <Sliders className="w-3.5 h-3.5 rotate-90" />
+                <span>3D Showcase</span>
+              </button>
+              <button
                 onClick={() => setViewMode('grid')}
                 className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
@@ -339,19 +355,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
                 title="Grid View"
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
-                <span>Grid</span>
-              </button>
-              <button
-                onClick={() => setViewMode('slider')}
-                className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer ${
-                  viewMode === 'slider'
-                    ? 'bg-[#11261B] text-[#DFC285] shadow-xs'
-                    : 'text-[#5C6E61] hover:text-[#11261B]'
-                }`}
-                title="Slider View"
-              >
-                <Sliders className="w-3.5 h-3.5 rotate-90" />
-                <span>Slider</span>
+                <span>Grid ({filteredProjects.length})</span>
               </button>
             </div>
 
@@ -367,10 +371,10 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
               />
             </div>
           </div>
-        </div>
+        </RevealItem>
 
         {/* Filter Segmented Buttons (Tabs with Icons and Count Badges) */}
-        <div className="flex items-center gap-1.5 p-1.5 bg-[#F2EDE2] rounded-xl border border-[#11261B]/10 mb-8 overflow-x-auto">
+        <RevealItem delay={0.1} y={20} className="flex items-center gap-1.5 p-1.5 bg-[#F2EDE2] rounded-xl border border-[#11261B]/10 mb-8 overflow-x-auto">
           {categories.map((cat) => {
             const isActive = activeCategory === cat.id;
             const count = cat.id === 'all' 
@@ -378,12 +382,14 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
               : projects.filter((p) => normalizeCategory(p.category) === cat.id).length;
 
             return (
-              <button
+              <motion.button
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-4 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 whitespace-nowrap shrink-0 cursor-pointer flex items-center gap-2 ${
+                className={`px-4 py-2.5 text-xs font-semibold rounded-lg transition-colors duration-300 whitespace-nowrap shrink-0 cursor-pointer flex items-center gap-2 ${
                   isActive
-                    ? 'bg-[#11261B] text-[#F8F5EE] shadow-md scale-[1.02] border border-[#C5A059]/40'
+                    ? 'bg-[#11261B] text-[#F8F5EE] shadow-md border border-[#C5A059]/40'
                     : 'text-[#5C6E61] hover:text-[#11261B] hover:bg-white/60'
                 }`}
               >
@@ -398,10 +404,10 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
                 >
                   {count}
                 </span>
-              </button>
+              </motion.button>
             );
           })}
-        </div>
+        </RevealItem>
 
         {/* Projects Viewport (Grid vs Slider) */}
         {filteredProjects.length === 0 ? (
@@ -419,21 +425,78 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
             </button>
           </div>
         ) : viewMode === 'slider' ? (
-          /* Premium Interactive Carousel Slider */
-          <div 
-            className="relative select-none"
+          /* Video-Matched 3D Perspective Fanned Arc Showcase Slider */
+          <RevealItem
+            delay={0.08}
+            y={32}
+            className="relative select-none py-4"
             onMouseEnter={() => setIsAutoplayPaused(true)}
             onMouseLeave={() => setIsAutoplayPaused(false)}
           >
-            {/* Slider Viewport */}
-            <div className="overflow-hidden rounded-2xl">
-              <div 
-                className="flex transition-transform duration-500 ease-out"
-                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-              >
-                {filteredProjects.map((project, index) => (
-                  <div key={project.id} className="w-full shrink-0 px-1">
-                    <div className="max-w-4xl mx-auto">
+            {/* 3D Perspective Stage */}
+            <div
+              className="relative h-[560px] sm:h-[600px] flex items-center justify-center overflow-hidden rounded-3xl bg-gradient-to-b from-[#07160D] via-[#0B2014] to-[#06120B] border border-[#C5A059]/25 shadow-2xl px-4"
+              style={{ perspective: '1300px' }}
+            >
+              {/* Subtle Ambient Spotlight Behind Active Card */}
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-80 bg-[radial-gradient(circle_at_center,rgba(197,160,89,0.16),transparent_65%)] pointer-events-none" />
+
+              {filteredProjects.map((project, index) => {
+                const total = filteredProjects.length;
+                let diff = index - currentIndex;
+                if (total > 2) {
+                  if (diff > total / 2) diff -= total;
+                  if (diff < -total / 2) diff += total;
+                }
+
+                const absDiff = Math.abs(diff);
+                if (absDiff > 2) return null;
+
+                const isCenter = diff === 0;
+                const xOffset = diff === 0 ? 0 : diff * (absDiff === 1 ? 265 : 445);
+                const yOffset = absDiff === 0 ? 0 : absDiff === 1 ? 22 : 58;
+                const scaleVal = absDiff === 0 ? 1 : absDiff === 1 ? 0.86 : 0.74;
+                const rotateZVal = diff * 4.2;
+                const rotateYVal = -diff * 12;
+                const opacityVal = absDiff === 0 ? 1 : absDiff === 1 ? 0.88 : 0.48;
+                const zIndexVal = 30 - absDiff * 10;
+
+                return (
+                  <motion.div
+                    key={project.id}
+                    initial={false}
+                    animate={{
+                      x: xOffset,
+                      y: yOffset,
+                      scale: scaleVal,
+                      rotateZ: rotateZVal,
+                      rotateY: rotateYVal,
+                      opacity: opacityVal,
+                    }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 230,
+                      damping: 26,
+                      mass: 0.9,
+                    }}
+                    style={{
+                      zIndex: zIndexVal,
+                      transformStyle: 'preserve-3d',
+                    }}
+                    onClick={() => {
+                      if (!isCenter) setCurrentIndex(index);
+                    }}
+                    className={`absolute w-[92%] max-w-[430px] sm:max-w-[480px] ${
+                      isCenter ? 'cursor-default' : 'cursor-pointer hidden sm:block'
+                    }`}
+                  >
+                    <div
+                      className={`rounded-2xl transition-shadow duration-300 ${
+                        isCenter
+                          ? 'ring-2 ring-[#C5A059]/70 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.85)]'
+                          : 'brightness-[0.82] hover:brightness-95 shadow-2xl pointer-events-none'
+                      }`}
+                    >
                       <ProjectCard
                         project={project}
                         index={index}
@@ -441,66 +504,72 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
                         onOpenLiveDemo={handleLaunchLiveDemo}
                       />
                     </div>
-                  </div>
-                ))}
-              </div>
+                  </motion.div>
+                );
+              })}
             </div>
 
-            {/* Slider Navigation Chevrons */}
+            {/* Video-Matched Dark Pill Navigation Controller */}
             {filteredProjects.length > 1 && (
-              <>
-                <button
-                  onClick={() => setCurrentIndex((prev) => (prev - 1 + filteredProjects.length) % filteredProjects.length)}
-                  className="absolute -left-3 sm:-left-6 top-[35%] -translate-y-1/2 p-3 rounded-full bg-[#11261B] border border-[#C5A059]/30 text-[#DFC285] hover:bg-[#1A3828] hover:text-[#C5A059] shadow-xl hover:scale-105 active:scale-95 transition-all z-20 cursor-pointer"
-                  title="Previous Project"
-                >
-                  <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
-                </button>
-                <button
-                  onClick={() => setCurrentIndex((prev) => (prev + 1) % filteredProjects.length)}
-                  className="absolute -right-3 sm:-right-6 top-[35%] -translate-y-1/2 p-3 rounded-full bg-[#11261B] border border-[#C5A059]/30 text-[#DFC285] hover:bg-[#1A3828] hover:text-[#C5A059] shadow-xl hover:scale-105 active:scale-95 transition-all z-20 cursor-pointer"
-                  title="Next Project"
-                >
-                  <ChevronRight className="w-5 h-5 stroke-[2.5]" />
-                </button>
-              </>
-            )}
+              <div className="max-w-3xl mx-auto mt-6">
+                <div className="bg-[#091A10] border border-[#C5A059]/30 rounded-2xl px-4 sm:px-6 py-3.5 shadow-xl flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <motion.button
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.92 }}
+                      onClick={() => setCurrentIndex((prev) => (prev - 1 + filteredProjects.length) % filteredProjects.length)}
+                      className="w-10 h-10 rounded-full bg-white/5 border border-[#C5A059]/30 text-[#DFC285] hover:bg-[#C5A059] hover:text-[#11261B] flex items-center justify-center transition-colors cursor-pointer"
+                      title="Previous Project"
+                    >
+                      <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.92 }}
+                      onClick={() => setCurrentIndex((prev) => (prev + 1) % filteredProjects.length)}
+                      className="w-10 h-10 rounded-full bg-white/5 border border-[#C5A059]/30 text-[#DFC285] hover:bg-[#C5A059] hover:text-[#11261B] flex items-center justify-center transition-colors cursor-pointer"
+                      title="Next Project"
+                    >
+                      <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                    </motion.button>
+                    <span className="text-xs font-mono font-bold text-[#F8F5EE] ml-1 tabular-nums">
+                      {String(currentIndex + 1).padStart(2, '0')} <span className="text-[#8A9B8F]">/ {String(filteredProjects.length).padStart(2, '0')}</span>
+                    </span>
+                  </div>
 
-            {/* Premium Progress Indicators & Dots */}
-            {filteredProjects.length > 1 && (
-              <div className="flex flex-col items-center gap-3 mt-8">
-                {/* Dots */}
-                <div className="flex justify-center items-center gap-2">
-                  {filteredProjects.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentIndex(idx)}
-                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                        currentIndex === idx 
-                          ? 'w-10 bg-[#11261B]' 
-                          : 'w-2 bg-[#11261B]/20 hover:bg-[#11261B]/40'
-                      }`}
-                    />
-                  ))}
+                  {/* Pagination Dots */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto max-w-[260px] py-1">
+                    {filteredProjects.map((proj, idx) => (
+                      <button
+                        key={proj.id}
+                        onClick={() => setCurrentIndex(idx)}
+                        aria-label={`View project ${idx + 1}: ${proj.title}`}
+                        className={`h-2 rounded-full transition-all duration-300 cursor-pointer shrink-0 ${
+                          currentIndex === idx
+                            ? 'w-7 bg-[#C5A059]'
+                            : 'w-2 bg-white/25 hover:bg-white/50'
+                        }`}
+                      />
+                    ))}
+                  </div>
                 </div>
-                {/* Visual Status Indicator */}
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#5C6E61]">
-                  Project {currentIndex + 1} of {filteredProjects.length}
-                </span>
               </div>
             )}
-          </div>
+          </RevealItem>
         ) : (
-          /* Standard Projects Grid */
+          /* Standard Projects Grid with Staggered Wave Entrance */
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {filteredProjects.map((project, index) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                index={index}
-                onSelectProject={onSelectProject}
-                onOpenLiveDemo={handleLaunchLiveDemo}
-              />
+              <RevealCard key={project.id} index={index} columns={2} hoverY={-6} className="flex">
+                <div className="w-full flex">
+                  <ProjectCard
+                    project={project}
+                    index={index}
+                    onSelectProject={onSelectProject}
+                    onOpenLiveDemo={handleLaunchLiveDemo}
+                  />
+                </div>
+              </RevealCard>
             ))}
           </div>
         )}

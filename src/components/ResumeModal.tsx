@@ -1,7 +1,11 @@
+'use client';
+
 import React, { useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { X, Printer, Download, Mail, Phone, MapPin, Globe, Github, Linkedin, Briefcase, GraduationCap, Award, Code2, ArrowUpRight } from 'lucide-react';
 import { CourseCertification, DeveloperProfile, Project, SkillGroup } from '../types/portfolio';
 import cvPortrait from '../assets/images/cv_portrait_new.jpg';
+import { STUDIO_EASE } from './MotionPrimitives';
 
 interface ResumeModalProps {
   isOpen: boolean;
@@ -33,8 +37,6 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
     }
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
 
   const handlePrint = () => {
     window.print();
@@ -102,11 +104,24 @@ ${courses.map((c) => `- **${c.title}** — ${c.institution} (${c.period}) | Link
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-[#11261B]/85 backdrop-blur-md animate-fade-in">
-      <div
-        className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl border border-[#11261B]/20 overflow-hidden my-6 flex flex-col max-h-[90vh]"
-        onClick={(e) => e.stopPropagation()}
+    <AnimatePresence>
+      {isOpen && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.22 }}
+        onClick={onClose}
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-[#11261B]/85 backdrop-blur-md"
       >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.93, y: 18 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 12 }}
+          transition={{ duration: 0.28, ease: STUDIO_EASE }}
+          className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl border border-[#11261B]/20 overflow-hidden my-6 flex flex-col max-h-[90vh]"
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Top Modal Controls (Hidden in Print) */}
         <div className="flex items-center justify-between px-6 py-4 bg-[#11261B] text-white border-b border-[#C5A059]/30 shrink-0 print:hidden">
           <div className="flex items-center gap-2">
@@ -305,7 +320,9 @@ ${courses.map((c) => `- **${c.title}** — ${c.institution} (${c.period}) | Link
 
         </div>
 
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

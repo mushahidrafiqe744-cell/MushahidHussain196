@@ -1,9 +1,13 @@
+'use client';
+
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { ArrowRight, Download, Github, Linkedin, Mail, Sparkles, Code2, Layers, Award, Star, Zap, Phone, MessageCircle } from 'lucide-react';
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
 import { HoverCounter } from './HoverCounter';
 import { PWAInstallButton } from './PWAInstallButton';
+import { RevealItem, STUDIO_EASE, STUDIO_SPRING } from './MotionPrimitives';
 import pin1Img from '../assets/images/pin1_new.jpg';
 import pin2Img from '../assets/images/pin2_new.jpg';
 import heroPortrait from '../assets/images/mushahid_hero_portrait_1790420656343.jpg';
@@ -40,13 +44,13 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
           <div className="lg:col-span-7 flex flex-col items-start z-10">
             
             {/* Small Kicker with Pulse Sparkle */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#11261B]/5 border border-[#11261B]/10 text-xs font-bold tracking-[0.2em] uppercase text-[#11261B]/90 mb-3 animate-shimmer hover:scale-105 transition-transform duration-300">
+            <RevealItem immediate delay={0.04} y={20} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#11261B]/5 border border-[#11261B]/10 text-xs font-bold tracking-[0.2em] uppercase text-[#11261B]/90 mb-3 animate-shimmer hover:scale-105 transition-transform duration-300">
               <span>HELLO, I'M</span>
               <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-pulse" />
-            </div>
+            </RevealItem>
 
             {/* Massive Display Name with Interactive Letter Bouncing */}
-            <div className="relative mb-6 group cursor-default">
+            <RevealItem immediate delay={0.1} y={28} className="relative mb-6 group cursor-default">
               <h1 className="font-display text-6xl sm:text-7xl lg:text-8xl font-black tracking-tight text-[#11261B] leading-[0.95] select-none">
                 {nameLetters.map((char, index) => (
                   <span
@@ -62,68 +66,82 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
               <div className="font-script text-5xl sm:text-6xl lg:text-7xl text-[#C5A059] -mt-3 sm:-mt-5 ml-4 sm:ml-8 transform -rotate-2 select-none pointer-events-none drop-shadow-xs animate-float">
                 {profile.scriptSubhead}
               </div>
-            </div>
+            </RevealItem>
 
             {/* Dark Pill Motto with Shimmer Reflection */}
-            <div className="flex flex-wrap items-center gap-3 mb-6">
+            <RevealItem immediate delay={0.16} y={24} className="flex flex-wrap items-center gap-3 mb-6">
               <div className="inline-flex items-center gap-2 bg-[#11261B] text-[#F8F5EE] text-xs sm:text-sm font-semibold tracking-wider uppercase px-5 py-2.5 rounded-full shadow-md border border-[#C5A059]/30 animate-shimmer hover:scale-105 transition-all duration-300">
                 <Zap className="w-3.5 h-3.5 text-[#C5A059] animate-bounce" />
                 <span>{profile.badge}</span>
               </div>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.04, y: -1 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => onOpenSection('services')}
-                className="inline-flex items-center gap-2 bg-[#11261B]/5 hover:bg-[#11261B]/10 border border-[#11261B]/15 text-[#11261B] text-xs sm:text-sm font-bold px-4 py-2 rounded-full shadow-2xs hover:scale-105 transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 bg-[#11261B]/5 hover:bg-[#11261B]/10 border border-[#11261B]/15 text-[#11261B] text-xs sm:text-sm font-bold px-4 py-2 rounded-full shadow-2xs transition-colors cursor-pointer"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span>Websites Starting From ₨ 20,000</span>
-              </button>
-            </div>
+              </motion.button>
+            </RevealItem>
 
             {/* Bio Paragraph */}
-            <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed max-w-xl mb-8 font-normal">
+            <motion.p
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.22, ease: STUDIO_EASE }}
+              className="text-[#5C6E61] text-base sm:text-lg leading-relaxed max-w-xl mb-8 font-normal"
+            >
               {profile.bioHero}
-            </p>
+            </motion.p>
 
             {/* CTA Buttons with Active Shimmer Beams */}
-            <div className="flex flex-wrap items-center gap-4">
-              <button
+            <RevealItem immediate delay={0.28} y={22} className="flex flex-wrap items-center gap-4">
+              <motion.button
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => onOpenSection('projects')}
-                className="group relative overflow-hidden inline-flex items-center gap-3 px-6 py-3.5 text-xs sm:text-sm font-bold tracking-wider uppercase text-white bg-[#11261B] hover:bg-[#1A3828] rounded-full transition-all shadow-md hover:shadow-xl hover:scale-[1.03] cursor-pointer animate-shimmer"
+                className="group relative overflow-hidden inline-flex items-center gap-3 px-6 py-3.5 text-xs sm:text-sm font-bold tracking-wider uppercase text-white bg-[#11261B] hover:bg-[#1A3828] rounded-full transition-colors shadow-md hover:shadow-xl cursor-pointer animate-shimmer"
               >
                 <span>View Projects</span>
                 <div className="w-6 h-6 rounded-full bg-white/15 flex items-center justify-center group-hover:translate-x-1 transition-transform">
                   <ArrowRight className="w-3.5 h-3.5 text-[#C5A059]" />
                 </div>
-              </button>
+              </motion.button>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => onOpenSection('services')}
-                className="group inline-flex items-center gap-2 px-5 py-3.5 text-xs sm:text-sm font-bold tracking-wider uppercase text-[#11261B] bg-white border border-[#11261B]/20 hover:border-[#C5A059] hover:bg-[#F2EDE2] rounded-full transition-all shadow-xs hover:scale-105 hover:shadow-md cursor-pointer"
+                className="group inline-flex items-center gap-2 px-5 py-3.5 text-xs sm:text-sm font-bold tracking-wider uppercase text-[#11261B] bg-white border border-[#11261B]/20 hover:border-[#C5A059] hover:bg-[#F2EDE2] rounded-full transition-colors shadow-xs hover:shadow-md cursor-pointer"
               >
                 <Layers className="w-4 h-4 text-[#C5A059] group-hover:rotate-12 transition-transform duration-300" />
                 <span>My Services</span>
-              </button>
+              </motion.button>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={onOpenResume}
-                className="group inline-flex items-center gap-2 px-5 py-3.5 text-xs sm:text-sm font-bold tracking-wider uppercase text-[#11261B] bg-white border border-[#11261B]/20 hover:border-[#C5A059] hover:bg-[#F2EDE2] rounded-full transition-all shadow-xs hover:scale-105 hover:shadow-md cursor-pointer"
+                className="group inline-flex items-center gap-2 px-5 py-3.5 text-xs sm:text-sm font-bold tracking-wider uppercase text-[#11261B] bg-white border border-[#11261B]/20 hover:border-[#C5A059] hover:bg-[#F2EDE2] rounded-full transition-colors shadow-xs hover:shadow-md cursor-pointer"
               >
                 <Download className="w-4 h-4 text-[#C5A059] group-hover:translate-y-0.5 transition-transform duration-300" />
                 <span>Download CV</span>
-              </button>
+              </motion.button>
 
               <PWAInstallButton variant="hero" />
-            </div>
+            </RevealItem>
 
             {/* Interactive Metric Numbers Bar */}
-            <div className="grid grid-cols-3 gap-3 sm:gap-6 mt-10 pt-8 border-t border-[#11261B]/10 w-full max-w-lg">
+            <RevealItem immediate delay={0.35} y={24} className="grid grid-cols-3 gap-3 sm:gap-6 mt-10 pt-8 border-t border-[#11261B]/10 w-full max-w-lg">
               
               {/* Stat 1: Projects Delivered (50+) */}
-              <button
+              <motion.button
+                whileHover={{ y: -3 }}
                 onClick={() => onOpenSection('projects')}
                 onMouseEnter={() => setHoveredMetric(1)}
                 onMouseLeave={() => setHoveredMetric(null)}
-                className="text-left group cursor-pointer p-1 transition-all duration-300 select-none"
+                className="text-left group cursor-pointer p-1 transition-colors duration-300 select-none"
               >
                 <div className="flex items-baseline gap-1">
                   <span className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums leading-none">
@@ -133,14 +151,15 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-1.5 group-hover:text-[#11261B] transition-colors">
                   Projects Delivered ↗
                 </div>
-              </button>
+              </motion.button>
 
               {/* Stat 2: Experience (8+ Years) */}
-              <button
+              <motion.button
+                whileHover={{ y: -3 }}
                 onClick={() => onOpenSection('experience')}
                 onMouseEnter={() => setHoveredMetric(2)}
                 onMouseLeave={() => setHoveredMetric(null)}
-                className="text-left group cursor-pointer p-1 transition-all duration-300 select-none"
+                className="text-left group cursor-pointer p-1 transition-colors duration-300 select-none"
               >
                 <div className="flex items-baseline gap-1.5">
                   <span className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums leading-none">
@@ -153,14 +172,15 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-1.5 group-hover:text-[#11261B] transition-colors">
                   Experience ↗
                 </div>
-              </button>
+              </motion.button>
 
               {/* Stat 3: Satisfaction (99%) */}
-              <button
+              <motion.button
+                whileHover={{ y: -3 }}
                 onClick={() => onOpenSection('why-choose-me')}
                 onMouseEnter={() => setHoveredMetric(3)}
                 onMouseLeave={() => setHoveredMetric(null)}
-                className="text-left group cursor-pointer p-1 transition-all duration-300 select-none"
+                className="text-left group cursor-pointer p-1 transition-colors duration-300 select-none"
               >
                 <div className="flex items-baseline gap-1">
                   <span className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums leading-none">
@@ -170,13 +190,18 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-1.5 group-hover:text-[#11261B] transition-colors">
                   Satisfaction ↗
                 </div>
-              </button>
-            </div>
+              </motion.button>
+            </RevealItem>
 
           </div>
 
           {/* Right Column: Arch Portrait with Animated Image & Floating Badges */}
-          <div className="lg:col-span-5 relative flex justify-center items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 32, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.72, delay: 0.14, ease: STUDIO_EASE }}
+            className="lg:col-span-5 relative flex justify-center items-center"
+          >
             
             {/* Background Decorative Arch Glow */}
             <div className="absolute -inset-4 bg-gradient-to-br from-[#DFC285]/40 via-transparent to-[#11261B]/20 rounded-[180px_180px_40px_40px] blur-2xl -z-10 animate-pulse-glow" />
@@ -212,14 +237,24 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
             </div>
 
             {/* Left Side: Floating Emblem Badge with Running 360° Circular Text & Dashed Line */}
-            <div className="hidden sm:block absolute -top-4 -left-6 z-20 transition-transform duration-300 hover:scale-110 cursor-pointer drop-shadow-2xl animate-float">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.75, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ ...STUDIO_SPRING, delay: 0.28 }}
+              className="hidden sm:block absolute -top-4 -left-6 z-20 transition-transform duration-300 hover:scale-110 cursor-pointer drop-shadow-2xl animate-float"
+            >
               <EmblemLogo size="md" showSubtitle={true} interactive={true} name={profile.name} title={profile.title} />
-            </div>
+            </motion.div>
 
             {/* Right Side: Floating Full-Stack Developer Badge */}
-            <button
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8, x: 16 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ ...STUDIO_SPRING, delay: 0.34 }}
+              whileHover={{ scale: 1.06, y: -3 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => onOpenSection('skills')}
-              className="flex absolute -top-3 -right-2 sm:-right-4 bg-[#11261B] text-[#C5A059] px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl shadow-xl border border-[#C5A059]/40 items-center gap-2 sm:gap-2.5 z-20 cursor-pointer hover:scale-108 transition-all duration-300 group backdrop-blur-md animate-float-delayed animate-shimmer"
+              className="flex absolute -top-3 -right-2 sm:-right-4 bg-[#11261B] text-[#C5A059] px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl shadow-xl border border-[#C5A059]/40 items-center gap-2 sm:gap-2.5 z-20 cursor-pointer group backdrop-blur-md animate-float-delayed animate-shimmer"
               title="Click to view Skills"
             >
               <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white/5 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] group-hover:bg-[#C5A059] group-hover:text-[#11261B] group-hover:rotate-12 transition-all">
@@ -231,10 +266,15 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                   Developer ↗
                 </div>
               </div>
-            </button>
+            </motion.button>
 
             {/* Bottom-Right: Floating Social Glass Badge Card */}
-            <div className="absolute -bottom-6 right-0 sm:right-2 bg-white/95 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl shadow-2xl border border-[#11261B]/10 flex flex-col gap-2 z-20 min-w-[190px] sm:min-w-[210px] animate-float hover:scale-105 transition-all duration-300">
+            <motion.div
+              initial={{ opacity: 0, y: 24, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ ...STUDIO_SPRING, delay: 0.42 }}
+              className="absolute -bottom-6 right-0 sm:right-2 bg-white/95 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl shadow-2xl border border-[#11261B]/10 flex flex-col gap-2 z-20 min-w-[190px] sm:min-w-[210px] animate-float hover:scale-105 transition-all duration-300"
+            >
               <div className="text-[10px] font-bold tracking-widest uppercase text-[#5C6E61] px-1 flex items-center justify-between">
                 <span>Direct Channels</span>
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
@@ -325,9 +365,9 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 </div>
               </button>
 
-            </div>
+            </motion.div>
 
-          </div>
+          </motion.div>
 
         </div>
       </div>

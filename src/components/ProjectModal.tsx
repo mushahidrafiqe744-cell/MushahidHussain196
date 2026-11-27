@@ -1,7 +1,11 @@
+'use client';
+
 import React, { useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { X, Github, ExternalLink, Check, Layers, Zap, Sparkles, MessageCircle, Play } from 'lucide-react';
 import { Project } from '../types/portfolio';
 import { resolveProjectImage, resolveProjectDomain } from '../lib/projectImage';
+import { STUDIO_EASE } from './MotionPrimitives';
 
 interface ProjectModalProps {
   project: Project | null;
@@ -21,17 +25,28 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  if (!project) return null;
-
-  const cleanDomain = resolveProjectDomain(project);
-  const modalImg = resolveProjectImage(project);
+  const cleanDomain = project ? resolveProjectDomain(project) : '';
+  const modalImg = project ? resolveProjectImage(project) : '';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-[#11261B]/80 backdrop-blur-sm animate-fade-in">
-      <div 
-        className="relative w-full max-w-3xl bg-[#F8F5EE] rounded-2xl shadow-2xl border border-[#11261B]/20 overflow-hidden my-8"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <AnimatePresence>
+      {project && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.22 }}
+          onClick={onClose}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-[#11261B]/80 backdrop-blur-sm"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.93, y: 18 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 12 }}
+            transition={{ duration: 0.28, ease: STUDIO_EASE }}
+            className="relative w-full max-w-3xl bg-[#F8F5EE] rounded-2xl shadow-2xl border border-[#11261B]/20 overflow-hidden my-8"
+            onClick={(e) => e.stopPropagation()}
+          >
         {/* Header Bar */}
         <div className="flex items-center justify-between px-6 py-4 bg-[#11261B] text-white border-b border-[#C5A059]/30">
           <div className="flex items-center gap-2">
@@ -221,7 +236,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, on
           </button>
         </div>
 
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

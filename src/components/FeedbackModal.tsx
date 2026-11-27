@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   X,
   Star,
@@ -11,6 +14,7 @@ import {
 } from 'lucide-react';
 import { SaveToggle } from './SaveToggle';
 import { cmsService } from '../services/cms';
+import { STUDIO_EASE } from './MotionPrimitives';
 
 interface FeedbackModalProps {
   isOpen: boolean;
@@ -40,8 +44,6 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose })
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
 
   const validateForm = (): boolean => {
     if (!formData.name.trim() || !formData.email.trim() || !formData.feedback.trim()) {
@@ -79,14 +81,24 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose })
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-[#11261B]/80 backdrop-blur-md animate-fade-in"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-lg bg-[#F8F5EE] rounded-3xl shadow-2xl border border-[#C5A059]/40 overflow-hidden transition-all"
-        onClick={(e) => e.stopPropagation()}
+    <AnimatePresence>
+      {isOpen && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.22 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-[#11261B]/80 backdrop-blur-md"
+        onClick={onClose}
       >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.93, y: 18 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 12 }}
+          transition={{ duration: 0.28, ease: STUDIO_EASE }}
+          className="relative w-full max-w-lg bg-[#F8F5EE] rounded-3xl shadow-2xl border border-[#C5A059]/40 overflow-hidden transition-colors"
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Header */}
         <div className="bg-[#11261B] text-white p-5 border-b border-[#C5A059]/30 relative">
           <div className="flex items-center justify-between">
@@ -216,7 +228,9 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose })
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

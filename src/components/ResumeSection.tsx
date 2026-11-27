@@ -1,6 +1,10 @@
+'use client';
+
 import React from 'react';
+import { motion } from 'motion/react';
 import { FileText, Download, Printer, ExternalLink, Sparkles, Check, GraduationCap, Award, Briefcase, Code2, Globe, ArrowUpRight } from 'lucide-react';
 import { CourseCertification, DeveloperProfile, Project, SkillGroup } from '../types/portfolio';
+import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
 
 interface ResumeSectionProps {
   profile: DeveloperProfile;
@@ -79,22 +83,32 @@ ${courseLines}
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2">
+          <RevealItem delay={0.04} y={20} className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2">
             <Sparkles className="w-3.5 h-3.5" />
             <span>CURRICULUM VITAE</span>
             <Sparkles className="w-3.5 h-3.5" />
-          </div>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4">
-            Downloadable Resume
-          </h2>
-          <div className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full" />
-          <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
-            Review my professional background, education, and technical competencies. Available for instant preview, print export, or file download.
-          </p>
+          </RevealItem>
+          <RevealItem delay={0.1} y={28}>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4">
+              Downloadable Resume
+            </h2>
+          </RevealItem>
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.14, ease: STUDIO_EASE }}
+            className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full"
+          />
+          <RevealItem delay={0.16} y={20}>
+            <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
+              Review my professional background, education, and technical competencies. Available for instant preview, print export, or file download.
+            </p>
+          </RevealItem>
         </div>
 
         {/* Resume Preview Sheet */}
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-[#11261B]/15 overflow-hidden">
+        <RevealItem delay={0.14} y={36} scale={0.97} className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-[#11261B]/15 overflow-hidden">
           
           {/* Top Sheet Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4 bg-[#11261B] text-white border-b border-[#C5A059]/30">
@@ -166,12 +180,12 @@ ${courseLines}
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 {skillGroups.map((group, idx) => (
-                  <div key={idx} className="p-3 bg-[#F8F5EE] rounded-xl border border-[#11261B]/5">
+                  <RevealCard key={idx} index={idx} columns={2} hoverY={-3} className="p-3 bg-[#F8F5EE] rounded-xl border border-[#11261B]/5">
                     <span className="font-bold text-[#11261B] block mb-1">{group.category}:</span>
                     <span className="text-[#5C6E61]">
                       {(group.skills || group.items || []).map((s: any) => s.name).join(', ')}
                     </span>
-                  </div>
+                  </RevealCard>
                 ))}
               </div>
             </div>
@@ -228,10 +242,13 @@ ${courseLines}
                   Completed Professional Courses & Certifications:
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {courses.map((course) => (
-                    <div
+                  {courses.map((course, idx) => (
+                    <RevealCard
                       key={course.id}
-                      className="p-3 rounded-xl bg-[#F8F5EE] border border-[#11261B]/10 hover:border-[#C5A059] transition-all flex flex-col justify-between group/c"
+                      index={idx}
+                      columns={2}
+                      hoverY={-4}
+                      className="p-3 rounded-xl bg-[#F8F5EE] border border-[#11261B]/10 hover:border-[#C5A059] transition-colors flex flex-col justify-between group/c"
                     >
                       <div className="flex items-start gap-2.5 mb-2">
                         {course.badgeImage && (
@@ -267,7 +284,7 @@ ${courseLines}
                           <ArrowUpRight className="w-3 h-3 text-[#C5A059]" />
                         </a>
                       </div>
-                    </div>
+                    </RevealCard>
                   ))}
                 </div>
               </div>
@@ -278,16 +295,18 @@ ${courseLines}
           {/* Bottom Card Footer */}
           <div className="px-6 py-4 bg-[#F8F5EE] border-t border-[#11261B]/10 flex items-center justify-between">
             <span className="text-xs text-[#5C6E61]">Ready to interview or collaborate?</span>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
               onClick={onOpenFullModal}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#11261B] hover:text-[#C5A059] transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#11261B] hover:text-[#C5A059] transition-colors cursor-pointer"
             >
               <span>Expand Full Modal</span>
               <ExternalLink className="w-3.5 h-3.5" />
-            </button>
+            </motion.button>
           </div>
 
-        </div>
+        </RevealItem>
 
       </div>
     </section>

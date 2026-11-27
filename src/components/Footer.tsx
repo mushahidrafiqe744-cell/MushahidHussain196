@@ -1,7 +1,11 @@
+'use client';
+
 import React from 'react';
+import { motion } from 'motion/react';
 import { Sparkles, Github, Linkedin, Mail, ArrowUp, Home, Phone, ShieldCheck } from 'lucide-react';
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
+import { RevealItem } from './MotionPrimitives';
 
 interface FooterProps {
   profile: DeveloperProfile;
@@ -30,7 +34,7 @@ export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection }) => {
     <footer className="bg-[#11261B] text-[#F8F5EE] border-t border-[#C5A059]/30">
       
       {/* Top Banner Ribbon */}
-      <div className="py-8 border-b border-white/10 text-center relative overflow-hidden">
+      <RevealItem delay={0.04} y={24} className="py-8 border-b border-white/10 text-center relative overflow-hidden">
         <div className="flex items-center justify-center gap-3 px-4">
           <Sparkles className="w-4 h-4 text-[#C5A059]" />
           <span className="font-display text-lg sm:text-2xl text-white font-medium">
@@ -38,10 +42,10 @@ export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection }) => {
           </span>
           <Sparkles className="w-4 h-4 text-[#C5A059]" />
         </div>
-      </div>
+      </RevealItem>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+        <RevealItem delay={0.1} y={28} className="flex flex-col md:flex-row items-center justify-between gap-8">
           
           {/* Brand Lockup with Running Circular Line - Clicking goes to Hero */}
           <a
@@ -149,20 +153,22 @@ export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection }) => {
               <Mail className="w-4 h-4" />
             </button>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.12, y: -2 }}
+              whileTap={{ scale: 0.92 }}
               onClick={scrollToTop}
               className="w-8 h-8 rounded-full bg-[#C5A059] text-[#11261B] hover:bg-[#DFC285] flex items-center justify-center transition-colors ml-2 shadow-xs cursor-pointer"
               title="Back to top"
               aria-label="Back to top"
             >
               <ArrowUp className="w-4 h-4" />
-            </button>
+            </motion.button>
           </div>
 
-        </div>
+        </RevealItem>
 
         {/* Quiet Copyright */}
-        <div className="mt-8 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-[#A3B8A8] gap-4">
+        <RevealItem delay={0.14} y={16} className="mt-8 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-[#A3B8A8] gap-4">
           <div>
             © {new Date().getFullYear()} {profile.name}. All rights reserved.
           </div>
@@ -180,7 +186,7 @@ export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection }) => {
               <span>Admin Panel</span>
             </a>
           </div>
-        </div>
+        </RevealItem>
 
       </div>
     </footer>

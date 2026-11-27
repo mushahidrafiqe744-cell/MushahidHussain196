@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   Star,
   Quote,
@@ -13,6 +16,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { Testimonial } from '../types/portfolio';
+import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
 
 interface TestimonialsSectionProps {
   testimonials: Testimonial[];
@@ -194,26 +198,30 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#11261B] text-[#DFC285] text-xs font-bold tracking-[0.2em] uppercase mb-3 shadow-xs border border-[#C5A059]/30">
+          <RevealItem delay={0.04} y={20} className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#11261B] text-[#DFC285] text-xs font-bold tracking-[0.2em] uppercase mb-3 shadow-xs border border-[#C5A059]/30">
             <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-pulse" />
             <span>VERIFIED REVIEWS</span>
             <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-pulse" />
-          </div>
+          </RevealItem>
 
-          <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
-            {titleChars.map((char, index) => (
-              <span key={index} className="hover-letter-bounce cursor-pointer">
-                {char === ' ' ? '\u00A0' : char}
-              </span>
-            ))}
-          </h2>
+          <RevealItem delay={0.1} y={28}>
+            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
+              {titleChars.map((char, index) => (
+                <span key={index} className="hover-letter-bounce cursor-pointer">
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              ))}
+            </h2>
+          </RevealItem>
 
-          <p className="text-sm sm:text-base text-[#5C6E61] leading-relaxed">
-            Real feedback and performance milestones from founders, enterprise clients, and students across Google & international platforms.
-          </p>
+          <RevealItem delay={0.16} y={20}>
+            <p className="text-sm sm:text-base text-[#5C6E61] leading-relaxed">
+              Real feedback and performance milestones from founders, enterprise clients, and students across Google & international platforms.
+            </p>
+          </RevealItem>
 
           {/* Google Rating Summary & View Switcher Bar */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+          <RevealItem delay={0.22} y={20} className="mt-6 flex flex-wrap items-center justify-center gap-4">
             <div className="inline-flex items-center gap-3 px-4 py-2 bg-white rounded-2xl border border-gray-200/80 shadow-xs">
               <GoogleLogoSvg className="w-5 h-5 shrink-0" />
               <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
@@ -257,14 +265,14 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 <span>Spotlight Slider</span>
               </button>
             </div>
-          </div>
+          </RevealItem>
         </div>
 
       </div>
 
       {/* VIEW MODE 1: Google Reviews Infinite Scrolling Multi-Row Wall (Video Style) */}
       {viewMode === 'wall' && (
-        <div className="w-full space-y-4 py-2 marquee-pause overflow-hidden">
+        <RevealItem delay={0.1} y={28} className="w-full space-y-4 py-2 marquee-pause overflow-hidden">
           
           {/* Row 1: Scrolling Left */}
           <div className="flex overflow-hidden">
@@ -309,7 +317,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
             </button>
           </div>
 
-        </div>
+        </RevealItem>
       )}
 
       {/* VIEW MODE 2: Featured Client Spotlight Slider (4-second carousel) */}
@@ -355,19 +363,28 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
               </div>
 
               {/* Middle: Review Quote Text */}
-              <div className="my-auto py-2 transition-all duration-500 animate-fade-in">
-                <blockquote className="font-serif-cormorant text-xl sm:text-2xl lg:text-3xl text-[#11261B] leading-snug italic font-normal tracking-wide">
-                  "{(current.review || current.feedback || current.message || '').trim() ||
-                    'Mushahid delivered exceptional full-stack web development quality on time with outstanding user interface design and responsive performance.'}"
-                </blockquote>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentIndex}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.35, ease: STUDIO_EASE }}
+                  className="my-auto py-2"
+                >
+                  <blockquote className="font-serif-cormorant text-xl sm:text-2xl lg:text-3xl text-[#11261B] leading-snug italic font-normal tracking-wide">
+                    "{(current.review || current.feedback || current.message || '').trim() ||
+                      'Mushahid delivered exceptional full-stack web development quality on time with outstanding user interface design and responsive performance.'}"
+                  </blockquote>
 
-                {current.metricsResult && (
-                  <div className="inline-flex items-center gap-2 mt-6 px-4 py-2 rounded-2xl bg-white border border-[#C5A059]/40 text-[#11261B] text-xs sm:text-sm font-bold shadow-xs">
-                    <TrendingUp className="w-4 h-4 text-[#059669] shrink-0" />
-                    <span>Impact: <strong className="text-[#11261B]">{current.metricsResult}</strong></span>
-                  </div>
-                )}
-              </div>
+                  {current.metricsResult && (
+                    <div className="inline-flex items-center gap-2 mt-6 px-4 py-2 rounded-2xl bg-white border border-[#C5A059]/40 text-[#11261B] text-xs sm:text-sm font-bold shadow-xs">
+                      <TrendingUp className="w-4 h-4 text-[#059669] shrink-0" />
+                      <span>Impact: <strong className="text-[#11261B]">{current.metricsResult}</strong></span>
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
 
               {/* Bottom Row: Client Profile Picture & Metadata */}
               <div className="flex flex-wrap items-center justify-between gap-4 mt-8 pt-6 border-t border-[#11261B]/10">
