@@ -7,6 +7,9 @@ import {
   initialSkillGroups,
   initialTestimonials,
   initialCourses,
+  initialExperiences,
+  initialWhyUsPillars,
+  initialWhyUsWorkflow,
 } from '../data/portfolioData';
 
 /**
@@ -126,33 +129,22 @@ const getFallbackData = (table: string) => {
       },
     ];
   } else if (table === 'experiences') {
-    initial = [
-      {
-        id: '00000000-0000-0000-0000-000000000003',
-        role: 'Full-Stack Web Developer',
-        company: 'Freelance & Independent Contractor',
-        period: '2024 – Present',
-        location: 'Remote Worldwide',
-        badge: 'Current Role',
-        description: 'Architecting and shipping responsive web apps, SaaS platforms, and headless e-commerce stores.',
-        achievements: [
-          'Built 30+ production web applications.',
-          'Engineered high-concurrency REST & GraphQL APIs.'
-        ],
-        stack: ['React', 'Next.js', 'TypeScript', 'Node.js'],
-        displayOrder: 0
-      }
-    ];
+    initial = initialExperiences.map((exp, idx) => ({
+      ...exp,
+      id: isUUID(exp.id) ? exp.id : toValidUUID(exp.id),
+      displayOrder: exp.displayOrder ?? idx * 10,
+    }));
   } else if (table === 'courses') {
     initial = initialCourses.map((c: any) => ({
       ...c,
       id: isUUID(c.id) ? c.id : generateUUID()
     }));
   } else if (table === 'why_us') {
-    initial = [
-      { id: '00000000-0000-0000-0000-000000000004', type: 'pillar', title: 'Creative Architecture', subtitle: 'Clean & Scalable Code', description: 'Writing maintainable, modular TypeScript.', icon: 'Lightbulb', displayOrder: 0 },
-      { id: '00000000-0000-0000-0000-000000000005', type: 'workflow', title: 'Discovery & Scope', description: 'Understanding your goals.', stepNumber: 1, displayOrder: 10 }
-    ];
+    initial = [...initialWhyUsPillars, ...initialWhyUsWorkflow].map((item, idx) => ({
+      ...item,
+      id: isUUID(item.id) ? item.id : toValidUUID(item.id),
+      displayOrder: item.displayOrder ?? idx * 10,
+    }));
   } else if (table === 'finalized_deals') {
     initial = [
       {
@@ -180,6 +172,61 @@ const setCacheData = (table: string, data: any[]) => {
       localStorage.setItem(`cms_cache_${table}`, JSON.stringify(data));
     } catch (e) {}
   }
+};
+
+const getDeletedBuiltInExperiences = (): Set<string> => {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = localStorage.getItem('cms_deleted_experiences');
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+};
+
+const mergeBuiltInExperiences = (items: any[]): any[] => {
+  const deleted = getDeletedBuiltInExperiences();
+  const existingIds = new Set(items.map((item: any) => String(item.id)));
+  const existingKeys = new Set(items.map((item: any) => `${String(item.role || '').toLowerCase()}::${String(item.period || '').toLowerCase()}`));
+
+  const missing = initialExperiences
+    .filter((exp) => {
+      const idMatch = existingIds.has(String(exp.id));
+      const keyMatch = existingKeys.has(`${exp.role.toLowerCase()}::${exp.period.toLowerCase()}`);
+      return !idMatch && !keyMatch && !deleted.has(String(exp.id));
+    })
+    .map(mapDbToFrontend);
+
+  return [...items, ...missing].sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+};
+
+const getDeletedBuiltInWhyUs = (): Set<string> => {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = localStorage.getItem('cms_deleted_why_us');
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+};
+
+const mergeBuiltInWhyUs = (items: any[]): any[] => {
+  const deleted = getDeletedBuiltInWhyUs();
+  const existingIds = new Set(items.map((item: any) => String(item.id)));
+  const existingKeys = new Set(
+    items.map((item: any) => `${String(item.type || '').toLowerCase()}::${String(item.title || '').toLowerCase()}`)
+  );
+
+  const builtInAll = [...initialWhyUsPillars, ...initialWhyUsWorkflow];
+  const missing = builtInAll
+    .filter((entry) => {
+      const idMatch = existingIds.has(String(entry.id));
+      const keyMatch = existingKeys.has(`${entry.type.toLowerCase()}::${entry.title.toLowerCase()}`);
+      return !idMatch && !keyMatch && !deleted.has(String(entry.id));
+    })
+    .map(mapDbToFrontend);
+
+  return [...items, ...missing].sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
 };
 
 const ORIGINAL_PROJECT_IMAGES: Record<string, string> = {
@@ -408,6 +455,16 @@ export const cmsService = {
               setCacheData(normTable, merged);
               return merged;
             }
+            if (normTable === 'experiences') {
+              const mergedExp = mergeBuiltInExperiences(mapped);
+              setCacheData(normTable, mergedExp);
+              return mergedExp;
+            }
+            if (normTable === 'why_us') {
+              const mergedWhyUs = mergeBuiltInWhyUs(mapped);
+              setCacheData(normTable, mergedWhyUs);
+              return mergedWhyUs;
+            }
             setCacheData(normTable, mapped);
             return mapped;
           }
@@ -437,6 +494,12 @@ export const cmsService = {
               .map(mapDbToFrontend);
             return [...mappedFallback, ...missingBuiltIns];
           }
+          if (normTable === 'experiences') {
+            return mergeBuiltInExperiences(mappedFallback);
+          }
+          if (normTable === 'why_us') {
+            return mergeBuiltInWhyUs(mappedFallback);
+          }
           return mappedFallback;
         }
       } catch (err) {
@@ -451,6 +514,12 @@ export const cmsService = {
         .filter((p) => p.liveUrl && !existingUrls.has(p.liveUrl) && !fallbackList.some((m: any) => m.title === p.title))
         .map(mapDbToFrontend);
       return [...fallbackList, ...missingBuiltIns];
+    }
+    if (normTable === 'experiences') {
+      return mergeBuiltInExperiences(fallbackList);
+    }
+    if (normTable === 'why_us') {
+      return mergeBuiltInWhyUs(fallbackList);
     }
     return fallbackList;
   },
@@ -524,6 +593,22 @@ export const cmsService = {
     const currentCache = getFallbackData(normTable);
     const newCache = currentCache.filter((item: any) => String(item.id) !== String(id) && String(item.id) !== String(targetId));
     setCacheData(normTable, newCache);
+    if (normTable === 'experiences' && typeof window !== 'undefined') {
+      try {
+        const deleted = getDeletedBuiltInExperiences();
+        deleted.add(String(id));
+        deleted.add(String(targetId));
+        localStorage.setItem('cms_deleted_experiences', JSON.stringify(Array.from(deleted)));
+      } catch {}
+    }
+    if (normTable === 'why_us' && typeof window !== 'undefined') {
+      try {
+        const deleted = getDeletedBuiltInWhyUs();
+        deleted.add(String(id));
+        deleted.add(String(targetId));
+        localStorage.setItem('cms_deleted_why_us', JSON.stringify(Array.from(deleted)));
+      } catch {}
+    }
     notifyCmsUpdated();
 
     if (supabase) {

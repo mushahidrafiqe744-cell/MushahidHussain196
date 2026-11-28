@@ -2,8 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Lightbulb, Sparkles, Zap } from 'lucide-react';
+import { Lightbulb, Sparkles, Zap, Shield, Star, CheckCircle2, Clock, Rocket, Code2 } from 'lucide-react';
 import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
+
+const PILLAR_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Lightbulb,
+  Zap,
+  Sparkles,
+  Shield,
+  Star,
+  Clock,
+  Rocket,
+  Code2,
+};
 
 interface WorkflowStep {
   targetNum: number;
@@ -63,6 +74,13 @@ interface WhyChooseMeProps {
 export const WhyChooseMeSection: React.FC<WhyChooseMeProps> = ({ pillars, workflow }) => {
   const titleChars = 'Why Choose Me?'.split('');
 
+  const guarantees = [
+    { label: '99.9% Uptime & Cloud Ready', icon: Shield },
+    { label: '95+ Lighthouse Speed Score', icon: Zap },
+    { label: '4–7 Day Rapid Launch', icon: Clock },
+    { label: '100% Ownership & Clean Code', icon: CheckCircle2 },
+  ];
+
   return (
     <section id="why-choose-me" className="py-20 bg-[#F8F5EE] border-b border-[#11261B]/10 relative overflow-hidden">
       <div className="absolute top-1/4 left-1/3 w-80 h-80 bg-[#C5A059]/10 rounded-full blur-3xl pointer-events-none -z-10 animate-float-slow" />
@@ -98,12 +116,13 @@ export const WhyChooseMeSection: React.FC<WhyChooseMeProps> = ({ pillars, workfl
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-16">
           {pillars.map((pillar, idx) => {
             const indexNum = String(idx + 1).padStart(2, '0');
+            const IconComponent = (pillar.icon && PILLAR_ICONS[pillar.icon]) || Lightbulb;
             return (
               <RevealCard key={pillar.id || idx} index={idx} columns={5} hoverY={-8} className="bg-[#F2EDE2] p-6 rounded-2xl border border-[#11261B]/10 hover:border-[#C5A059] shadow-xs hover:shadow-xl transition-colors duration-500 flex flex-col justify-between group animate-shimmer relative overflow-hidden">
                 <div className="absolute top-3 right-3 font-mono font-bold text-xs text-[#11261B]/20 group-hover:text-[#C5A059] transition-colors">#{indexNum}</div>
                 <div>
                   <div className="w-14 h-14 rounded-2xl bg-[#11261B] text-[#C5A059] flex items-center justify-center mb-4 shadow-sm border border-[#C5A059]/30 group-hover:scale-110 group-hover:bg-[#1A3828] group-hover:rotate-6 transition-all">
-                    <Lightbulb className="w-6 h-6" />
+                    <IconComponent className="w-6 h-6" />
                   </div>
                   <h3 className="font-display text-lg font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors mb-1">{pillar.title}</h3>
                   <div className="text-xs font-semibold text-[#C5A059] uppercase tracking-wider mb-2.5">{pillar.subtitle}</div>
@@ -129,6 +148,21 @@ export const WhyChooseMeSection: React.FC<WhyChooseMeProps> = ({ pillars, workfl
             ))}
           </div>
         </RevealItem>
+
+        {/* Client Guarantee & Delivery Standards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
+          {guarantees.map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <RevealCard key={item.label} index={idx} columns={4} hoverY={-4} className="bg-white px-5 py-4 rounded-xl border border-[#11261B]/10 hover:border-[#C5A059] shadow-xs flex items-center gap-3 transition-colors">
+                <div className="w-9 h-9 rounded-lg bg-[#11261B] text-[#C5A059] flex items-center justify-center shrink-0">
+                  <Icon className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-bold text-[#11261B]">{item.label}</span>
+              </RevealCard>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

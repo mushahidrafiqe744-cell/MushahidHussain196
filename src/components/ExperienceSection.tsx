@@ -76,6 +76,24 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile, e
           })}
         </div>
 
+        {/* Timeline Header Bar */}
+        <RevealItem delay={0.08} y={20} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8 pb-4 border-b border-[#11261B]/10">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#C5A059] animate-pulse" />
+            <h3 className="font-display text-xl sm:text-2xl font-bold text-[#11261B]">
+              Career Timeline
+            </h3>
+            <span className="text-[11px] font-mono font-bold bg-[#11261B] text-[#DFC285] px-2.5 py-0.5 rounded-full">
+              {experiences.length} Milestones · 2017–Present
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-[#5C6E61]">
+            <span className="px-2.5 py-1 rounded-lg bg-white border border-[#11261B]/10">SaaS & Enterprise</span>
+            <span className="px-2.5 py-1 rounded-lg bg-white border border-[#11261B]/10">E-Commerce & FinTech</span>
+            <span className="px-2.5 py-1 rounded-lg bg-white border border-[#11261B]/10">AI & Cloud APIs</span>
+          </div>
+        </RevealItem>
+
         <div className="space-y-8 relative">
           <div className="hidden lg:block absolute left-8 top-6 bottom-6 w-0.5 bg-gradient-to-b from-[#C5A059] via-[#11261B]/30 to-transparent" />
           {experiences.map((exp, idx) => (
@@ -86,7 +104,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile, e
               <div className="bg-[#F2EDE2] p-6 sm:p-8 rounded-2xl border border-[#11261B]/10 hover:border-[#C5A059] shadow-xs hover:shadow-xl transition-colors duration-500 animate-shimmer">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-[#11261B]/10">
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
                       <span className="font-display text-xl sm:text-2xl font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors">{exp.role}</span>
                       {exp.badge && <span className="text-[10px] font-bold uppercase tracking-wider bg-[#11261B] text-[#DFC285] px-2.5 py-0.5 rounded-full">{exp.badge}</span>}
                     </div>
