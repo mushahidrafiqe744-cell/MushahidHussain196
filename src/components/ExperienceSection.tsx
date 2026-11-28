@@ -5,7 +5,7 @@ import { motion } from 'motion/react';
 import { Briefcase, Calendar, CheckCircle2, Award, Sparkles, Star, Clock, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { DeveloperProfile } from '../types/portfolio';
 import { HoverCounter } from './HoverCounter';
-import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
+import { RevealCard, RevealItem, STUDIO_EASE, TypewriterWords } from './MotionPrimitives';
 
 interface ExperienceSectionProps {
   profile: DeveloperProfile;
@@ -105,18 +105,25 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile, e
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-[#11261B]/10">
                   <div>
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className="font-display text-xl sm:text-2xl font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors">{exp.role}</span>
+                      <span className="font-display text-xl sm:text-2xl font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors">
+                        <TypewriterWords text={exp.role} delayMs={60} wordSpeedMs={55} />
+                      </span>
                       {exp.badge && <span className="text-[10px] font-bold uppercase tracking-wider bg-[#11261B] text-[#DFC285] px-2.5 py-0.5 rounded-full">{exp.badge}</span>}
                     </div>
                     <div className="text-xs sm:text-sm font-semibold text-[#5C6E61]">{exp.company} · <span className="font-normal text-[#11261B]">{exp.location}</span></div>
                   </div>
                   <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#11261B] bg-white px-3 py-1.5 rounded-lg border border-[#11261B]/10 shrink-0"><Calendar className="w-3.5 h-3.5 text-[#C5A059]" /><span>{exp.period}</span></div>
                 </div>
-                <p className="text-xs sm:text-sm text-[#5C6E61] leading-relaxed mb-5">{exp.description}</p>
+                <p className="text-xs sm:text-sm text-[#5C6E61] leading-relaxed mb-5">
+                  <TypewriterWords text={exp.description} delayMs={180} wordSpeedMs={35} />
+                </p>
                 {exp.achievements && Array.isArray(exp.achievements) && (
                     <div className="space-y-2 mb-6">
                         {exp.achievements.map((item: string, i: number) => (
-                            <div key={i} className="flex items-start gap-2 text-xs sm:text-sm text-[#11261B]/85 group-hover:translate-x-1 transition-transform"><CheckCircle2 className="w-4 h-4 text-[#C5A059] shrink-0 mt-0.5" /><span>{item}</span></div>
+                            <div key={i} className="flex items-start gap-2 text-xs sm:text-sm text-[#11261B]/85 group-hover:translate-x-1 transition-transform">
+                              <CheckCircle2 className="w-4 h-4 text-[#C5A059] shrink-0 mt-0.5" />
+                              <TypewriterWords text={item} delayMs={360 + i * 240} wordSpeedMs={34} />
+                            </div>
                         ))}
                     </div>
                 )}

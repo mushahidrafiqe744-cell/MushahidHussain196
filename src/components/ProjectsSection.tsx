@@ -6,7 +6,7 @@ import { Github, ArrowUpRight, Search, Code, Sparkles, Layers, MessageCircle, Ch
 import { Project } from '../types/portfolio';
 import { resolveProjectImage, resolveProjectDomain } from '../lib/projectImage';
 import { LiveProjectDemo } from './LiveProjectDemo';
-import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
+import { RevealCard, RevealItem, STUDIO_EASE, TypewriterWords } from './MotionPrimitives';
 
 interface ProjectsSectionProps {
   projects: Project[];
@@ -17,9 +17,10 @@ interface ProjectsSectionProps {
 const ProjectCard: React.FC<{
   project: Project;
   index: number;
+  isActiveCard?: boolean;
   onSelectProject: (project: Project) => void;
   onOpenLiveDemo: (project: Project) => void;
-}> = ({ project, index, onSelectProject, onOpenLiveDemo }) => {
+}> = ({ project, index, isActiveCard = true, onSelectProject, onOpenLiveDemo }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [currentNum, setCurrentNum] = useState(0);
   const targetNum = index + 1;
@@ -148,12 +149,12 @@ const ProjectCard: React.FC<{
             onClick={() => onSelectProject(project)}
             className="font-display text-xl sm:text-2xl font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors cursor-pointer mb-2 leading-snug"
           >
-            {project.title}
+            <TypewriterWords text={project.title} delayMs={60} wordSpeedMs={50} active={isActiveCard} />
           </h3>
 
           {/* Description */}
           <p className="text-xs sm:text-sm text-[#5C6E61] leading-relaxed line-clamp-2 mb-4">
-            {project.description}
+            <TypewriterWords text={project.description} delayMs={180} wordSpeedMs={32} active={isActiveCard} />
           </p>
 
           {/* Tech Stack Tags with Hover Bounce */}
@@ -500,6 +501,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
                       <ProjectCard
                         project={project}
                         index={index}
+                        isActiveCard={isCenter}
                         onSelectProject={onSelectProject}
                         onOpenLiveDemo={handleLaunchLiveDemo}
                       />

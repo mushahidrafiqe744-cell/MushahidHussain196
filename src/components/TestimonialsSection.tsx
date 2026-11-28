@@ -16,7 +16,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { Testimonial } from '../types/portfolio';
-import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
+import { RevealCard, RevealItem, STUDIO_EASE, TypewriterWords } from './MotionPrimitives';
 
 interface TestimonialsSectionProps {
   testimonials: Testimonial[];
@@ -99,7 +99,11 @@ const GoogleReviewCard: React.FC<{ item: Testimonial }> = ({ item }) => {
 
         {/* Feedback / Review Text */}
         <p className="text-xs sm:text-sm text-gray-700 leading-relaxed font-normal">
-          {expanded || !isLong ? reviewText : `${reviewText.slice(0, 110)}...`}
+          <TypewriterWords
+            text={expanded || !isLong ? reviewText : `${reviewText.slice(0, 110)}...`}
+            delayMs={80}
+            wordSpeedMs={38}
+          />
           {isLong && (
             <button
               onClick={() => setExpanded(!expanded)}
@@ -373,8 +377,13 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   className="my-auto py-2"
                 >
                   <blockquote className="font-serif-cormorant text-xl sm:text-2xl lg:text-3xl text-[#11261B] leading-snug italic font-normal tracking-wide">
-                    "{(current.review || current.feedback || current.message || '').trim() ||
-                      'Mushahid delivered exceptional full-stack web development quality on time with outstanding user interface design and responsive performance.'}"
+                    &ldquo;<TypewriterWords
+                      key={`quote-${currentIndex}`}
+                      text={(current.review || current.feedback || current.message || '').trim() ||
+                        'Mushahid delivered exceptional full-stack web development quality on time with outstanding user interface design and responsive performance.'}
+                      delayMs={100}
+                      wordSpeedMs={42}
+                    />&rdquo;
                   </blockquote>
 
                   {current.metricsResult && (

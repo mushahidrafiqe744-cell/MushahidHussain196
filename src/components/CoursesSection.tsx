@@ -18,7 +18,7 @@ import {
   Check
 } from 'lucide-react';
 import { CourseCertification } from '../types/portfolio';
-import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
+import { RevealCard, RevealItem, STUDIO_EASE, TypewriterWords } from './MotionPrimitives';
 
 interface CoursesSectionProps {
   courses: CourseCertification[];
@@ -176,7 +176,7 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({ courses }) => {
 
                   {/* Course Title */}
                   <h3 className="font-display text-lg sm:text-xl font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors mb-2.5 leading-snug">
-                    {course.title}
+                    <TypewriterWords text={course.title} delayMs={60} wordSpeedMs={50} />
                   </h3>
 
                   {/* Verified Credential Tag */}
@@ -189,7 +189,7 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({ courses }) => {
 
                   {/* Description */}
                   <p className="text-xs sm:text-sm text-[#5C6E61] leading-relaxed mb-5">
-                    {course.description}
+                    <TypewriterWords text={course.description} delayMs={200} wordSpeedMs={32} />
                   </p>
 
                   {/* Skills Covered Pills */}

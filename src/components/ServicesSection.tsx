@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Service } from '../types/portfolio';
 import { ServiceOrderModal, ServiceItemData } from './ServiceOrderModal';
-import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
+import { RevealCard, RevealItem, STUDIO_EASE, TypewriterWords } from './MotionPrimitives';
 
 interface ServicesSectionProps {
   services: Service[];
@@ -105,12 +105,12 @@ const ServiceCard: React.FC<{
             isHovered ? 'text-[#C5A059]' : 'text-[#11261B]'
           }`}
         >
-          {service.title}
+          <TypewriterWords text={service.title} delayMs={60} wordSpeedMs={55} />
         </h3>
 
         {/* Description */}
         <p className="text-xs text-[#5C6E61] leading-relaxed mb-4">
-          {service.description}
+          <TypewriterWords text={service.description} delayMs={180} wordSpeedMs={32} />
         </p>
 
         {/* Price & Timeline Quick Snapshot */}

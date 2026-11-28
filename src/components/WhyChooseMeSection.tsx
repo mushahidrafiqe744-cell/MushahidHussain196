@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Lightbulb, Sparkles, Zap, Shield, Star, CheckCircle2, Clock, Rocket, Code2 } from 'lucide-react';
-import { RevealCard, RevealItem, STUDIO_EASE } from './MotionPrimitives';
+import { RevealCard, RevealItem, STUDIO_EASE, TypewriterWords } from './MotionPrimitives';
 
 const PILLAR_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   Lightbulb,
@@ -56,8 +56,12 @@ const WorkflowCard: React.FC<{ step: WorkflowStep }> = ({ step }) => {
         <span className={`font-mono text-3xl font-black transition-all duration-300 inline-block tabular-nums ${isHovered ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#FFA62B] via-[#FFD180] to-[#DFC285] scale-110' : 'text-[#DFC285]/40'}`}>{formattedNumber}</span>
         <div className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${isHovered ? 'bg-[#FFA62B] shadow-lg shadow-[#FFA62B]/80 scale-125 animate-ping' : 'bg-[#C5A059]/40'}`} />
       </div>
-      <h4 className={`font-bold text-sm mb-1.5 transition-colors duration-300 ${isHovered ? 'text-[#FFD180]' : 'text-white'}`}>{step.title}</h4>
-      <p className="text-xs text-[#A3B8A8] leading-relaxed">{step.desc}</p>
+      <h4 className={`font-bold text-sm mb-1.5 transition-colors duration-300 ${isHovered ? 'text-[#FFD180]' : 'text-white'}`}>
+        <TypewriterWords text={step.title} delayMs={60} wordSpeedMs={55} />
+      </h4>
+      <p className="text-xs text-[#A3B8A8] leading-relaxed">
+        <TypewriterWords text={step.desc} delayMs={180} wordSpeedMs={38} />
+      </p>
       <div className="mt-3 pt-2 border-t border-white/5 flex items-center justify-between text-[10px] font-mono">
         <span className={isHovered ? 'text-[#C5A059] font-bold' : 'text-[#A3B8A8]/40'}>{isHovered ? 'Step Active' : 'Hover to activate'}</span>
         <span className={isHovered ? 'text-[#C5A059] font-bold' : 'text-[#A3B8A8]/40'}>#{String(step.targetNum).padStart(2, '0')}</span>
@@ -124,9 +128,13 @@ export const WhyChooseMeSection: React.FC<WhyChooseMeProps> = ({ pillars, workfl
                   <div className="w-14 h-14 rounded-2xl bg-[#11261B] text-[#C5A059] flex items-center justify-center mb-4 shadow-sm border border-[#C5A059]/30 group-hover:scale-110 group-hover:bg-[#1A3828] group-hover:rotate-6 transition-all">
                     <IconComponent className="w-6 h-6" />
                   </div>
-                  <h3 className="font-display text-lg font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors mb-1">{pillar.title}</h3>
+                  <h3 className="font-display text-lg font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors mb-1">
+                    <TypewriterWords text={pillar.title} delayMs={60 + idx * 45} wordSpeedMs={55} />
+                  </h3>
                   <div className="text-xs font-semibold text-[#C5A059] uppercase tracking-wider mb-2.5">{pillar.subtitle}</div>
-                  <p className="text-xs text-[#5C6E61] leading-relaxed">{pillar.description}</p>
+                  <p className="text-xs text-[#5C6E61] leading-relaxed">
+                    <TypewriterWords text={pillar.description} delayMs={180 + idx * 45} wordSpeedMs={36} />
+                  </p>
                 </div>
               </RevealCard>
             );
